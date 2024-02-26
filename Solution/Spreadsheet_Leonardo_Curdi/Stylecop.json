@@ -1,0 +1,22 @@
+{
+  "$schema": "https://raw.githubusercontent.com/DotNetAnalyzers/StyleCopAnalyzers/master/StyleCop.Analyzers/StyleCop.Analyzers/Settings/stylecop.schema.json",
+  "settings": {
+    "documentationRules": {
+      "companyName": "Leonardo Curdi - 11704166",
+      "copyrightText": "Copyright (c) {companyName}. All Rights Reserved.\r\nLicensed under the MIT License. See LICENSE in the project root for license information.",
+      "xmlHeader": false,
+      "fileNamingConvention": "metadata",
+      "documentPrivateElements": true,
+      "documentPrivateFields": true
+    },
+    "orderingRules": {
+      "usingDirectivesPlacement": "outsideNamespace"
+    },
+    "layoutRules": {
+      "newlineAtEndOfFile": "require"
+    },
+    "namingRules": {
+      "tupleElementNameCasing": "camelCase"
+    }
+  }
+}
