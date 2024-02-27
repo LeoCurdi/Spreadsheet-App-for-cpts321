@@ -7,21 +7,26 @@ using System.Runtime.Intrinsics.X86;
 using System.Xml.Linq;
 using System;
 using static System.Net.Mime.MediaTypeNames;
+using SpreadsheetEngine;
 
 namespace ExpressionTreeDemoApp {
     /// <summary>
     /// The main program class.
     /// </summary>
     internal static class Program {
+
+        static ExpressionTree expressionTree = new ExpressionTree();
+
+        static string expression = "A1+B1+C1";
+
         /// <summary>
         ///  The main entry point for the application.
         /// </summary>
-        [STAThread]
         public static void Main() {
             int menuSelection = 0;
             do {
                 // print the menu
-                printMenu();
+                printMenu(expression);
 
                 // get the user's selection
                 string userInput = Console.ReadLine();
@@ -54,8 +59,8 @@ namespace ExpressionTreeDemoApp {
             } while (menuSelection != 4);
         }
 
-        private static void printMenu() {
-            Console.WriteLine("Menu (current expression = \"" + 5 + "\")");
+        private static void printMenu(string expression) {
+            Console.WriteLine("Menu (current expression = \"{0}\")", expression);
             Console.WriteLine("  1 = Enter a new expression");
             Console.WriteLine("  2 = Set a variable value");
             Console.WriteLine("  3 = Evaluate tree");
