@@ -27,7 +27,7 @@ namespace SpreadsheetEngine {
         /// </summary>
         public int ColumnCount {
             get {
-                return 0;
+                return this.cellArray.GetLength(1); // get the length of the column dimension in the array
             }
         }
 
