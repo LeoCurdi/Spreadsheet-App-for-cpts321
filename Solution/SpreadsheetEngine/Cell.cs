@@ -23,9 +23,9 @@ namespace SpreadsheetEngine {
         protected string value;
 
         /// <summary>
-        /// 
+        /// Notify observers whenever a property changes.
         /// </summary>
-        public event PropertyChangedEventHandler PropertyChanged = delegate { }; // for when one of the properties changes
+        public event PropertyChangedEventHandler PropertyChanged = (sender, e) => { };
 
         /// <summary>
         /// Gets read only property for row index.

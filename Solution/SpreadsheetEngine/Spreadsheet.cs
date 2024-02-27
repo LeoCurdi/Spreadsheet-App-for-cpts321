@@ -18,9 +18,12 @@ namespace SpreadsheetEngine {
         /// <summary>
         /// A 2D array of cells.
         /// </summary>
-        public Cell[,] cellArray;
+        private Cell[,] cellArray;
 
-        public event PropertyChangedEventHandler CellPropertyChanged = delegate { };
+        /// <summary>
+        /// 
+        /// </summary>
+        public event PropertyChangedEventHandler CellPropertyChanged = (sender, e) => { };
 
         /// <summary>
         /// Gets a property that returns the number of columns in the spreadhseet.
@@ -46,8 +49,8 @@ namespace SpreadsheetEngine {
         /// Allocates space for a 2D array of cells.
         /// Initializes the array of cells.
         /// </summary>
-        /// <param name="rows"></param>
-        /// <param name="columns"></param>
+        /// <param name="rows">The number of rows for the new spreadsheet.</param>
+        /// <param name="columns">The number of columns for the new spreadsheet.</param>
         public Spreadsheet(int rows, int columns) {
             // initialize the cellArray
             this.cellArray = new Cell[rows, columns];
@@ -61,24 +64,41 @@ namespace SpreadsheetEngine {
         }
 
         /// <summary>
-        /// If the text of a cell changes, we need to evaluate the text and change the cell value here.
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void Cell_PropertyChanged(object sender, PropertyChangedEventArgs e) {
-            
-
-        }
-
-        /// <summary>
         /// Finds the cell located at row and column.
         /// </summary>
         /// <param name="rowIndex">The row of the cell.</param>
         /// <param name="columnIndex">The column of the cell.</param>
         /// <returns>a reference to the cell at a specified row and column.</returns>
         public Cell GetCell(int rowIndex, int columnIndex) {
-            return new SpreadsheetCell(0,0);
+            return this.cellArray[rowIndex, columnIndex];
         }
 
+        /// <summary>
+        /// If the text of a cell changes, we need to evaluate the text and change the cell value here.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void Cell_PropertyChanged(object sender, PropertyChangedEventArgs e) {
+
+            // sender is the cell whos text just changed
+            Cell cell = (Cell)sender;
+
+            // if the entered text is an equation
+            if (cell.Text[0] == '=') {
+                // evaluate the equation
+                // for hw4 we just need to have equals another cell
+                int row = cell.Text[2] - 49; // get the row entered by the user (ascii values of 0-10 start at 49)
+                int column = cell.Text[1] - 65; // get the column entered by the user (ascii values of A-Z start at 65)
+                string value = this.GetCell(row, column).Value; // get the target cell's value
+                cell.Value = value; // copy it to the current cell
+            }
+
+            // if it is just text
+            else {
+                cell.Value = cell.Text;
+            }
+
+            this.CellPropertyChanged(sender, e); // fire the PropertyChanged event for cell text changed
+        }
     }
 }
