@@ -36,7 +36,7 @@ namespace SpreadsheetEngine {
         /// </summary>
         public int RowCount {
             get {
-                return 0;
+                return this.cellArray.GetLength(0); // get the length of the row dimension in the array
             }
         }
 
