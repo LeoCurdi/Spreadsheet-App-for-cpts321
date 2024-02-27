@@ -24,6 +24,7 @@
         /// </summary>
         private void InitializeComponent() {
             cellGrid = new DataGridView();
+            button1 = new Button();
             ((System.ComponentModel.ISupportInitialize)cellGrid).BeginInit();
             SuspendLayout();
             // 
@@ -35,15 +36,26 @@
             cellGrid.Location = new Point(12, 12);
             cellGrid.Name = "cellGrid";
             cellGrid.RowHeadersWidth = 51;
-            cellGrid.Size = new Size(776, 426);
+            cellGrid.Size = new Size(1070, 577);
             cellGrid.TabIndex = 0;
             cellGrid.CellValueChanged += cellGrid_CellValueChanged;
+            // 
+            // button1
+            // 
+            button1.Location = new Point(12, 595);
+            button1.Name = "button1";
+            button1.Size = new Size(1070, 29);
+            button1.TabIndex = 1;
+            button1.Text = "Demo";
+            button1.UseVisualStyleBackColor = true;
+            button1.Click += button1_Click;
             // 
             // Form1
             // 
             AutoScaleDimensions = new SizeF(8F, 20F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(800, 450);
+            ClientSize = new Size(1094, 636);
+            Controls.Add(button1);
             Controls.Add(cellGrid);
             Name = "Form1";
             Text = "Spreadsheet Cpts 321";
@@ -54,5 +66,6 @@
         #endregion
 
         private DataGridView cellGrid;
+        private Button button1;
     }
 }

@@ -15,12 +15,12 @@ namespace SpreadsheetEngine {
         /// <summary>
         /// The text entered into the cell by the user.
         /// </summary>
-        protected string text;
+        private string text = "\0";
 
         /// <summary>
         /// The evaluated text, which is actually displayed in the cell.
         /// </summary>
-        protected string value;
+        private string value = "\0";
 
         /// <summary>
         /// Notify observers whenever a property changes.
@@ -75,9 +75,10 @@ namespace SpreadsheetEngine {
         }
 
         /// <summary>
-        /// Constructor.
-        /// Sets row and column index, which can never be changed.
+        /// Initializes a new instance of the <see cref="Cell"/> class.
         /// </summary>
+        /// <param name="row">Row index of the new cell.</param>
+        /// <param name="column">Column index of the new cell.</param>
         public Cell(int row, int column) {
             this.RowIndex = row;
             this.ColumnIndex = column;

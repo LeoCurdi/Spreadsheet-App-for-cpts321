@@ -12,10 +12,10 @@ namespace SpreadsheetEngine {
     public class SpreadsheetCell : Cell {
 
         /// <summary>
-        ///
+        /// Initializes a new instance of the <see cref="SpreadsheetCell"/> class.
         /// </summary>
-        /// <param name="row"></param>
-        /// <param name="column"></param>
+        /// <param name="row">Row index of the new cell.</param>
+        /// <param name="column">Column index of the new cell.</param>
         public SpreadsheetCell(int row, int column) : base(row, column) { }
 
     }

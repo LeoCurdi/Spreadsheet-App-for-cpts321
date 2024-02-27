@@ -21,7 +21,7 @@ namespace SpreadsheetEngine {
         private Cell[,] cellArray;
 
         /// <summary>
-        /// 
+        /// Notify observers whenever a property changes.
         /// </summary>
         public event PropertyChangedEventHandler CellPropertyChanged = (sender, e) => { };
 
@@ -87,8 +87,13 @@ namespace SpreadsheetEngine {
             if (cell.Text[0] == '=') {
                 // evaluate the equation
                 // for hw4 we just need to have equals another cell
-                int row = cell.Text[2] - 49; // get the row entered by the user (ascii values of 0-10 start at 49)
                 int column = cell.Text[1] - 65; // get the column entered by the user (ascii values of A-Z start at 65)
+                int row = cell.Text[2] - 49;
+
+                string text = cell.Text;
+                string enteredInt = text.Substring(2);
+                row = int.Parse(enteredInt) - 1;
+
                 string value = this.GetCell(row, column).Value; // get the target cell's value
                 cell.Value = value; // copy it to the current cell
             }

@@ -16,8 +16,11 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\SpreadsheetEngine\SpreadsheetEngine.csproj" />
 	<AdditionalFiles Include="stylecop.json" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\SpreadsheetEngine\SpreadsheetEngine.csproj" />
   </ItemGroup>
 
   <ItemGroup>

@@ -2,6 +2,7 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System.ComponentModel;
+using System.Data.Common;
 using SpreadsheetEngine;
 
 namespace Spreadsheet_Leonardo_Curdi {
@@ -14,12 +15,12 @@ namespace Spreadsheet_Leonardo_Curdi {
         /// <summary>
         /// Number of rows in the spreadsheet.
         /// </summary>
-        public static int Rows = 50;
+        private static int rows = 50;
 
         /// <summary>
         /// Number of columns in the spreadsheet.
         /// </summary>
-        public static int Columns = 26;
+        private static int columns = 26;
 
         /// <summary>
         /// An instance of the Spreadsheet class from the SpreadSheetEngine DLL.
@@ -35,8 +36,8 @@ namespace Spreadsheet_Leonardo_Curdi {
             this.InitializeDataGrid();
 
             // initialize the spreadsheet and sub to the cell property changed event.
-            this.spreadsheet = new Spreadsheet(Rows, Columns);
-            this.spreadsheet.CellPropertyChanged += this.Cell_PropertyChanged;
+            this.spreadsheet = new Spreadsheet(rows, columns);
+            this.spreadsheet.CellPropertyChanged += this.Cell_PropertyChanged!;
         }
 
         /// <summary>
@@ -65,16 +66,16 @@ namespace Spreadsheet_Leonardo_Curdi {
 
             // create n columns programatically
             int asciiOffset = 65;
-            for (int charAscii = asciiOffset; charAscii < asciiOffset + Form1.Columns; charAscii++) { // use ascii value for capital letters A - Z
+            for (int charAscii = asciiOffset; charAscii < asciiOffset + Form1.columns; charAscii++) { // use ascii value for capital letters A - Z
                 string columnName = ((char)charAscii).ToString(); // cast from ascii code value to char, then convert to a string, since Add() takes strings
                 this.cellGrid.Columns.Add(columnName, columnName); // use the Add() to add a column to the data grid
             }
 
             // create m rows
-            this.cellGrid.RowCount = Form1.Rows;
+            this.cellGrid.RowCount = Form1.rows;
 
             // name the m rows programatically
-            for (int row = 1; row <= Form1.Rows; row++) {
+            for (int row = 1; row <= Form1.rows; row++) {
                 this.cellGrid.Rows[row - 1].HeaderCell.Value = row.ToString(); // set the value of the header cell
             }
         }
@@ -88,6 +89,46 @@ namespace Spreadsheet_Leonardo_Curdi {
             if (e.ColumnIndex >= 0 && e.RowIndex >= 0) { // for some reason you have to check if the indexes are not negative.
                 string enteredText = this.cellGrid.Rows[e.RowIndex].Cells[e.ColumnIndex].Value.ToString(); // get the entered text from the user.
                 this.spreadsheet.GetCell(e.RowIndex, e.ColumnIndex).Text = enteredText; // update the text of the cell. (the text will be evaluated in the engine then bubbled back up to the listener in the form to update the value in the GUI)
+            }
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void button1_Click(object sender, EventArgs e) {
+            PerformDemo();
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        private void PerformDemo() {
+            // create an object of Random class
+            Random random = new Random();
+            string[] randomText = { "high cohesion", "low coupling" };
+
+            // set the text of 50 random cells to a text string.
+            for (int i = 0; i < 100; i++) {
+                // get a random int for row and column
+                int row = random.Next(0, 50); // the upper bound is exclusive, so we will get 0-49
+                int column = random.Next(0, 26);
+                int text = random.Next(0, 2);
+
+                // set the text of the randomly selected cell
+                this.spreadsheet.GetCell(row, column).Text = randomText[text];
+            }
+
+            // set the text in every cell in column B to "This is cell B#"
+            for (int i = 0; i < 50; i++) {
+                this.spreadsheet.GetCell(i, 1).Text = "This is cell B" + (i + 1);
+            }
+
+            // set the text in every cell in column A to "=B#"
+            for (int i = 0; i < 50; i++) {
+                string text = "=B" + (i + 1);
+                this.spreadsheet.GetCell(i, 0).Text = text;
             }
         }
     }
