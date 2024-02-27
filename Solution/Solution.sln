@@ -5,9 +5,14 @@ VisualStudioVersion = 17.8.34408.163
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Spreadsheet_Leonardo_Curdi", "Spreadsheet_Leonardo_Curdi\Spreadsheet_Leonardo_Curdi.csproj", "{ACC0B014-74F9-4A5A-B471-B88ECA315BB6}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SpreadsheetEngine", "SpreadsheetEngine\SpreadsheetEngine.csproj", "{652AC4D1-02FA-41A1-A745-44799EC2AEE0}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SpreadsheetEngine", "SpreadsheetEngine\SpreadsheetEngine.csproj", "{652AC4D1-02FA-41A1-A745-44799EC2AEE0}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestSpreadsheet", "TestSpreadsheet\TestSpreadsheet.csproj", "{87B46D72-E950-49A8-8FFF-E862FF56DDF2}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TestSpreadsheet", "TestSpreadsheet\TestSpreadsheet.csproj", "{87B46D72-E950-49A8-8FFF-E862FF56DDF2}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{7B529926-EFFC-4E3F-ACC5-C2C4BAACC7CA}"
+	ProjectSection(SolutionItems) = preProject
+		.editorconfig = .editorconfig
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

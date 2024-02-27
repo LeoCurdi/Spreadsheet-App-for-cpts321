@@ -22,6 +22,10 @@
 	  <AdditionalFiles Include="stylecop.json" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Include="..\.editorconfig" Link=".editorconfig" />
+  </ItemGroup>
+
 
 	<ItemGroup>
 		<ProjectReference Include="..\Spreadsheet_Leonardo_Curdi\Spreadsheet_Leonardo_Curdi.csproj" />

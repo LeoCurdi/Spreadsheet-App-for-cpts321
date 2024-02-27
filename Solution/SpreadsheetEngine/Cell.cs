@@ -10,7 +10,9 @@ namespace SpreadsheetEngine {
     /// It is an abstract base class, because we are creating a library, so we want our library to be usable in many applications thus classes should be able to inherit from a basic cell class.
     /// public so that projects that use the library can access it.
     /// </summary>
+#pragma warning disable SA1505 // Opening braces should not be followed by blank line
     public abstract class Cell : INotifyPropertyChanged { // notify observers when a cell property is changed
+#pragma warning restore SA1505 // Opening braces should not be followed by blank line
 
         /// <summary>
         /// The text entered into the cell by the user.
@@ -21,6 +23,16 @@ namespace SpreadsheetEngine {
         /// The evaluated text, which is actually displayed in the cell.
         /// </summary>
         private string value = "\0";
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Cell"/> class.
+        /// </summary>
+        /// <param name="row">Row index of the new cell.</param>
+        /// <param name="column">Column index of the new cell.</param>
+        public Cell(int row, int column) {
+            this.RowIndex = row;
+            this.ColumnIndex = column;
+        }
 
         /// <summary>
         /// Notify observers whenever a property changes.
@@ -71,17 +83,9 @@ namespace SpreadsheetEngine {
                 return this.value;
             }
 
-            internal set { this.value = value; } // setter is internal so only spreadsheet and cell can access it
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="Cell"/> class.
-        /// </summary>
-        /// <param name="row">Row index of the new cell.</param>
-        /// <param name="column">Column index of the new cell.</param>
-        public Cell(int row, int column) {
-            this.RowIndex = row;
-            this.ColumnIndex = column;
+            internal set {
+                this.value = value;
+            } // setter is internal so only spreadsheet and cell can access it
         }
     }
 }

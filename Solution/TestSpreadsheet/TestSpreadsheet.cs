@@ -15,7 +15,6 @@ namespace SpreadsheetTests {
         /// </summary>
         private Spreadsheet testSheet;
 
-
         /// <summary>
         /// The constructor for the test class.
         /// Initializes the data members.
@@ -52,6 +51,7 @@ namespace SpreadsheetTests {
         public void TestChangingCellText() {
             // set the text of a cell.
             this.testSheet.GetCell(1, 5).Text = "cohesion";
+
             // check if the value matches.
             Assert.AreEqual(
                 "cohesion",
@@ -65,8 +65,10 @@ namespace SpreadsheetTests {
         public void TestEnteringEquation() {
             // set the text of cell A1
             this.testSheet.GetCell(0, 0).Text = "cohesion";
+
             // set cell B2 equal to the value of cell A1
             this.testSheet.GetCell(1, 1).Text = "=A1";
+
             // check if the value of B2 was correctly evaluated to equal the contents of A1.
             Assert.AreEqual(
                 "cohesion",

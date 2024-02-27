@@ -9,16 +9,35 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace SpreadsheetEngine {
-
     /// <summary>
     /// Serves as a container for a 2D array of cells, and a factory for cells (cells will be created here.
     /// </summary>
     public class Spreadsheet {
-
         /// <summary>
         /// A 2D array of cells.
         /// </summary>
         private Cell[,] cellArray;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Spreadsheet"/> class.
+        /// Constructor.
+        /// Allocates space for a 2D array of cells.
+        /// Initializes the array of cells.
+        /// </summary>
+        /// <param name="rows">The number of rows for the new spreadsheet.</param>
+        /// <param name="columns">The number of columns for the new spreadsheet.</param>
+        public Spreadsheet(int rows, int columns) {
+            // initialize the cellArray
+            this.cellArray = new Cell[rows, columns];
+
+            // initialize each cell and subscribe the sheet to cell's property changed event for every cell
+            for (int row = 0; row < rows; row++) {
+                for (int column = 0; column < columns; column++) {
+                    this.cellArray[row, column] = new SpreadsheetCell(row, column);
+                    this.cellArray[row, column].PropertyChanged += this.Cell_PropertyChanged!;
+                }
+            }
+        }
 
         /// <summary>
         /// Notify observers whenever a property changes.
@@ -44,26 +63,6 @@ namespace SpreadsheetEngine {
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="Spreadsheet"/> class.
-        /// Constructor.
-        /// Allocates space for a 2D array of cells.
-        /// Initializes the array of cells.
-        /// </summary>
-        /// <param name="rows">The number of rows for the new spreadsheet.</param>
-        /// <param name="columns">The number of columns for the new spreadsheet.</param>
-        public Spreadsheet(int rows, int columns) {
-            // initialize the cellArray
-            this.cellArray = new Cell[rows, columns];
-            // initialize each cell and subscribe the sheet to cell's property changed event for every cell
-            for (int row = 0; row < rows; row++) {
-                for (int column = 0; column < columns; column++) {
-                    this.cellArray[row, column] = new SpreadsheetCell(row, column);
-                    this.cellArray[row, column].PropertyChanged += this.Cell_PropertyChanged;
-                }
-            }
-        }
-
-        /// <summary>
         /// Finds the cell located at row and column.
         /// </summary>
         /// <param name="rowIndex">The row of the cell.</param>
@@ -76,10 +75,9 @@ namespace SpreadsheetEngine {
         /// <summary>
         /// If the text of a cell changes, we need to evaluate the text and change the cell value here.
         /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
+        /// <param name="sender">This is the object that is triggering an event.</param>
+        /// <param name="e">The arguments associated with the event.</param>
         private void Cell_PropertyChanged(object sender, PropertyChangedEventArgs e) {
-
             // sender is the cell whos text just changed
             Cell cell = (Cell)sender;
 
