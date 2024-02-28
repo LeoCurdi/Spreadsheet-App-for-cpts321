@@ -48,7 +48,11 @@ namespace SpreadsheetEngine {
         /// <param name="variableName">The name of the target variable.</param>
         /// <param name="variableValue">The value to set the variable to.</param>
         public void SetVariable(string variableName, double variableValue) {
-
+            // if the variable exists in our dictionary
+            if (this.variables.ContainsKey(variableName)) {
+                // set the value
+                this.variables[variableName] = variableValue;
+            }
         }
 
         /// <summary>
