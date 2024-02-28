@@ -30,13 +30,16 @@ namespace SpreadsheetEngine {
         /// </summary>
         private Dictionary<string, double> variables = new Dictionary<string, double>();
 
-
         /// <summary>
         /// Initializes a new instance of the <see cref="ExpressionTree"/> class.
         /// Constructs the tree from an expression.
         /// </summary>
         public ExpressionTree(string expression) {
-            
+            // save the entered expression
+            this.expression = expression;
+
+            // build the tree
+            this.BuildExpresstionTree();
         }
 
         /// <summary>
@@ -59,6 +62,18 @@ namespace SpreadsheetEngine {
             }
 
             return -1;
+        }
+
+        /// <summary>
+        /// Called by the constructor.
+        /// Takes the given expression and builds the expression tree.
+        /// </summary>
+        private void BuildExpresstionTree() {
+            // parse the expression into an array of chars
+
+            // convert the expression from infix to postfix
+
+            // load the postfix expression into the tree
         }
     }
 }
