@@ -30,7 +30,7 @@ namespace SpreadsheetEngine {
         /// </summary>
         /// <returns>A double containing the result of evaluation of the node.</returns>
         public override double Evaluate() {
-            throw new NotImplementedException();
+            return this.value;
         }
     }
 }
