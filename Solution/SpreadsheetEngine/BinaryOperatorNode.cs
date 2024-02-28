@@ -30,8 +30,8 @@ namespace SpreadsheetEngine {
         /// Initializes a new instance of the <see cref="BinaryOperatorNode"/> class.
         /// </summary>
         /// <param name="operatorChar">The operator of the node.</param>
-        /// <param name="left"></param>
-        /// <param name="right"></param>
+        /// <param name="left">The operator node's left child.</param>
+        /// <param name="right">The operator node's right child.</param>
         public BinaryOperatorNode(char operatorChar, ExpressionTreeNode left, ExpressionTreeNode right) {
             this.operatorChar = operatorChar;
             this.leftNode = left;
