@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -93,6 +94,17 @@ namespace SpreadsheetEngine {
         private List<string> TokenizeInfixExpression(string expression) {
             List<string> infixTokens = new List<string>();
 
+            // Regex stuff (Code help from: https://www.bytehide.com/blog/regex-csharp)
+            // brackets are like parens, | means or, * means 0 or more, \ is an escape code, ? means the item is optional.
+            // Operators: "[\+\-\*\/\(\)]": finds any single char operators (+, -, *, /, (, )).
+            // Variables: "[a-zA-Z][a-zA-Z0-9]*": finds any variables that start with 1 letter followed by any combination of 0 or more letters or numbers.
+            // Constants: "\d+(\.\d+)?": finds numeric values of one or more digits with an optional dot followed by one or more digits for decimal numbers.
+            string regexPattern = @"([\+\-\*\/\(\)])|([a-zA-Z][a-zA-Z0-9]*)|(\d+(\.\d+)?)"; // Regex pattern for operators, variables, and numbers. @"(operators)|(variables)|(constants)"
+            MatchCollection matches = Regex.Matches(expression, regexPattern); // use Regex to get all the individual items from the expression (assuming they are valid)
+            foreach (Match m in matches) { // for each parsed item
+                Console.WriteLine(m.ToString());
+                infixTokens.Add(m.Value); // add each item to the list of tokens
+            } // End of code help from: https://www.bytehide.com/blog/regex-csharp
 
             return infixTokens;
         }
