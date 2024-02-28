@@ -15,9 +15,9 @@ namespace ExpressionTreeDemoApp {
     /// </summary>
     internal static class Program {
 
-        static ExpressionTree expressionTree = new ExpressionTree();
-
         static string expression = "A1+B1+C1";
+
+        static ExpressionTree expressionTree = new ExpressionTree(expression);
 
         /// <summary>
         ///  The main entry point for the application.
