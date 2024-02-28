@@ -1,4 +1,4 @@
-﻿// Copyright (c) Leonardo Curdi - 11704166. All Rights Reserved.
+﻿// Copyright(c) Leonardo Curdi - 11704166. All Rights Reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System.Diagnostics.Metrics;
@@ -9,6 +9,7 @@ using System;
 using static System.Net.Mime.MediaTypeNames;
 using SpreadsheetEngine;
 using System.Runtime.CompilerServices;
+using System.Text.RegularExpressions;
 
 namespace ExpressionTreeDemoApp {
     /// <summary>
@@ -35,7 +36,7 @@ namespace ExpressionTreeDemoApp {
                 PrintMenu(expression);
 
                 // get the user's selection
-                string userInput = Console.ReadLine() !;
+                string userInput = Console.ReadLine()!;
 
                 // try to convert to an integer, then handle selection if successful
                 if (int.TryParse(userInput, out menuSelection)) {
@@ -45,16 +46,16 @@ namespace ExpressionTreeDemoApp {
                             // 1.The option to enter an expression string. You may assume that only valid expressions will be entered with no whitespaces.
                             // Simplified expressions are used for this assignment and the assumptions you are allowed to make are discussed later on.
                             Console.Write("Enter new expression: ");
-                            string newExpression = Console.ReadLine() !;
+                            string newExpression = Console.ReadLine()!;
                             expressionTree = new ExpressionTree(newExpression!);
                             expression = newExpression;
                             break;
                         case 2:
                             // 2.The option to set a variable value in the expression.
                             Console.Write("Enter variable name: ");
-                            string variableName = Console.ReadLine() !;
+                            string variableName = Console.ReadLine()!;
                             Console.Write("Enter variable value: ");
-                            double variableValue = Convert.ToDouble(Console.ReadLine() !);
+                            double variableValue = Convert.ToDouble(Console.ReadLine()!);
                             expressionTree.SetVariable(variableName, variableValue);
                             break;
                         case 3:

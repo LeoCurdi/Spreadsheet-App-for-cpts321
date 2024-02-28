@@ -2,7 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using System.Xml;
 
 namespace SpreadsheetEngine {
 
@@ -11,9 +13,14 @@ namespace SpreadsheetEngine {
     /// </summary>
     public class ExpressionTree {
         /// <summary>
-        /// A list of chars for the supported operators.
+        /// A list of chars for the supported operators, and their importance in order of operations.
         /// </summary>
-        private char[] operators = { '+', '-', '*', '/' };
+        private Dictionary<char, int> OperatorPrecedences = new Dictionary<char, int> {
+            { '+', 1 },
+            { '-', 1 },
+            { '*', 2 },
+            { '/', 2 },
+        };
 
         /// <summary>
         /// The entered expression.
@@ -39,7 +46,7 @@ namespace SpreadsheetEngine {
             this.expression = expression;
 
             // build the tree
-            this.BuildExpresstionTree();
+            this.BuildExpressionTree();
         }
 
         /// <summary>
@@ -72,12 +79,33 @@ namespace SpreadsheetEngine {
         /// Called by the constructor.
         /// Takes the given expression and builds the expression tree.
         /// </summary>
-        private void BuildExpresstionTree() {
-            // parse the expression into an array of chars
+        private void BuildExpressionTree() {
+            // tokenize the infix expression
+            List<string> infixTokens = TokenizeInfixExpression(this.expression);
 
-            // convert the expression from infix to postfix
+            // convert the tokenized expression from infix to postfix
+            List<string> postfixTokens = ConvertExpressionToPostfix(infixTokens);
 
             // load the postfix expression into the tree
+            this.rootNode = LoadPostfixTokensIntoTree(postfixTokens);
+        }
+
+        private List<string> TokenizeInfixExpression(string expression) {
+            List<string> infixTokens = new List<string>();
+
+
+            return infixTokens;
+        }
+
+        private List<string> ConvertExpressionToPostfix(List<string> infixTokens) {
+            List<string> postfixTokens = new List<string>();
+
+            return postfixTokens;
+        }
+
+        private ExpressionTreeNode LoadPostfixTokensIntoTree(List<string> postfixTokens) {
+
+            return new VariableNode("memes", variables);
         }
     }
 }

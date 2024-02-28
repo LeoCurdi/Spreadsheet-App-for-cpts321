@@ -29,6 +29,7 @@ namespace SpreadsheetEngine {
         public VariableNode(string name, Dictionary<string, double> variables) {
             this.name = name;
             this.variables = variables;
+            this.variables.Add(this.name, 0); // add the variable with a default value of 0
         }
 
         /// <summary>
