@@ -30,6 +30,7 @@ namespace SpreadsheetEngine {
         /// </summary>
         /// <returns>A double containing the result of evaluation of the node.</returns>
         public override double Evaluate() {
+            // just use the value itself
             return this.value;
         }
     }
