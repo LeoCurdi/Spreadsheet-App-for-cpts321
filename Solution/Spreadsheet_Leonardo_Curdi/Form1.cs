@@ -73,7 +73,7 @@ namespace Spreadsheet_Leonardo_Curdi {
         /// <param name="e">The arguments associated with the event.</param>
         private void Cell_PropertyChanged(object sender, PropertyChangedEventArgs e) {
             // get the cell whos value has changed
-            SpreadsheetCell cell = (SpreadsheetCell)sender;
+            Cell cell = (Cell)sender;
 
             // update the value of the corresponding cell in the DataGridView
             this.CellGrid.Rows[cell.RowIndex].Cells[cell.ColumnIndex].Value = cell.Value;
@@ -87,7 +87,7 @@ namespace Spreadsheet_Leonardo_Curdi {
         private void CellGrid_CellValueChanged(object sender, DataGridViewCellEventArgs e) {
             if (e.ColumnIndex >= 0 && e.RowIndex >= 0) { // for some reason you have to check if the indexes are not negative.
                 string enteredText = this.CellGrid.Rows[e.RowIndex].Cells[e.ColumnIndex].Value.ToString() !; // get the entered text from the user.
-                this.spreadsheet.GetCell(e.RowIndex, e.ColumnIndex).Text = enteredText; // update the text of the cell. (the text will be evaluated in the engine then bubbled back up to the listener in the form to update the value in the GUI)
+                this.spreadsheet.SetCellText(e.RowIndex, e.ColumnIndex, enteredText); // update the text of the cell. (the text will be evaluated in the engine then bubbled back up to the listener in the form to update the value in the GUI)
             }
         }
 
@@ -116,18 +116,18 @@ namespace Spreadsheet_Leonardo_Curdi {
                 int text = random.Next(0, 2);
 
                 // set the text of the randomly selected cell
-                this.spreadsheet.GetCell(row, column).Text = randomText[text];
+                this.spreadsheet.SetCellText(row, column, randomText[text]);
             }
 
             // set the text in every cell in column B to "This is cell B#"
             for (int i = 0; i < 50; i++) {
-                this.spreadsheet.GetCell(i, 1).Text = "This is cell B" + (i + 1);
+                this.spreadsheet.SetCellText(i, 1, "This is cell B" + (i + 1));
             }
 
             // set the text in every cell in column A to "=B#"
             for (int i = 0; i < 50; i++) {
                 string text = "=B" + (i + 1);
-                this.spreadsheet.GetCell(i, 0).Text = text;
+                this.spreadsheet.SetCellText(i, 0, text);
             }
         }
     }

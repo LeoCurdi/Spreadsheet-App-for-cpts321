@@ -11,18 +11,24 @@ namespace SpreadsheetEngine {
     /// public so that projects that use the library can access it.
     /// </summary>
 #pragma warning disable SA1505 // Opening braces should not be followed by blank line
-    public abstract class Cell : INotifyPropertyChanged { // notify observers when a cell property is changed
+    public abstract class Cell {
 #pragma warning restore SA1505 // Opening braces should not be followed by blank line
 
         /// <summary>
         /// The text entered into the cell by the user.
+        /// Protected so that SpreadsheetCell can inherit it.
         /// </summary>
-        private string text = "\0";
+#pragma warning disable SA1401 // Fields should be private
+        protected string text = "\0";
+#pragma warning restore SA1401 // Fields should be private
 
         /// <summary>
         /// The evaluated text, which is actually displayed in the cell.
+        /// Protected so that SpreadsheetCell can inherit it.
         /// </summary>
-        private string value = "\0";
+#pragma warning disable SA1401 // Fields should be private
+        protected string value = "\0";
+#pragma warning restore SA1401 // Fields should be private
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Cell"/> class.
@@ -33,11 +39,6 @@ namespace SpreadsheetEngine {
             this.RowIndex = row;
             this.ColumnIndex = column;
         }
-
-        /// <summary>
-        /// Notify observers whenever a property changes.
-        /// </summary>
-        public event PropertyChangedEventHandler PropertyChanged = (sender, e) => { };
 
         /// <summary>
         /// Gets read only property for row index.
@@ -54,22 +55,11 @@ namespace SpreadsheetEngine {
         }
 
         /// <summary>
-        /// Gets or sets the text that is typed into the cell (unevaluated equations etc).
+        /// Gets the text that is typed into the cell (unevaluated equations etc).
         /// </summary>
         public string Text {
             get {
                 return this.text;
-            }
-
-            set {
-                // if text being set is the same text, don't call the property change event (since the text isn't actually being changed)
-                if (this.text == value) {
-                    return;
-                }
-
-                // if new text is different
-                this.text = value; // set new text
-                this.PropertyChanged(this, new PropertyChangedEventArgs("Text")); // fire the PropertyChanged event for cell text changed
             }
         }
 
@@ -82,10 +72,6 @@ namespace SpreadsheetEngine {
             get {
                 return this.value;
             }
-
-            internal set {
-                this.value = value;
-            } // setter is internal so only spreadsheet and cell can access it
         }
     }
 }

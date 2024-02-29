@@ -6,6 +6,7 @@
     <Nullable>enable</Nullable>
     <UseWindowsForms>true</UseWindowsForms>
     <ImplicitUsings>enable</ImplicitUsings>
+    <GenerateDocumentationFile>True</GenerateDocumentationFile>
   </PropertyGroup>
 
   <ItemGroup>
@@ -21,12 +22,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\SpreadsheetEngine\SpreadsheetEngine.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Reference Include="SpreadsheetEngine">
-      <HintPath>..\SpreadsheetEngine\bin\Debug\net8.0\SpreadsheetEngine.dll</HintPath>
-    </Reference>
   </ItemGroup>
 
 </Project>

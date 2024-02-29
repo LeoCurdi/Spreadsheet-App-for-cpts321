@@ -50,7 +50,7 @@ namespace SpreadsheetTests {
         [Test]
         public void TestChangingCellText() {
             // set the text of a cell.
-            this.testSheet.GetCell(1, 5).Text = "cohesion";
+            this.testSheet.SetCellText(1, 5, "cohesion");
 
             // check if the value matches.
             Assert.AreEqual(
@@ -64,10 +64,10 @@ namespace SpreadsheetTests {
         [Test]
         public void TestEnteringEquation() {
             // set the text of cell A1
-            this.testSheet.GetCell(0, 0).Text = "cohesion";
+            this.testSheet.SetCellText(0, 0, "cohesion");
 
             // set cell B2 equal to the value of cell A1
-            this.testSheet.GetCell(1, 1).Text = "=A1";
+            this.testSheet.SetCellText(1, 1, "=A1");
 
             // check if the value of B2 was correctly evaluated to equal the contents of A1.
             Assert.AreEqual(
