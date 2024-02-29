@@ -14,16 +14,6 @@ namespace SpreadsheetEngine {
     /// </summary>
     public class ExpressionTree {
         /// <summary>
-        /// A list of chars for the supported operators, and their importance in order of operations.
-        /// </summary>
-        private Dictionary<char, int> OperatorPrecedences = new Dictionary<char, int> {
-            { '+', 1 },
-            { '-', 1 },
-            { '*', 2 },
-            { '/', 2 },
-        };
-
-        /// <summary>
         /// The entered expression.
         /// </summary>
         private string expression;
@@ -91,7 +81,16 @@ namespace SpreadsheetEngine {
             this.rootNode = LoadPostfixTokensIntoTree(postfixTokens);
         }
 
+        /// <summary>
+        /// 
+        /// Works for expressions with parentheses.
+        /// </summary>
+        /// <param name="expression"></param>
+        /// <returns></returns>
         private List<string> TokenizeInfixExpression(string expression) {
+            Console.WriteLine("Tokenizing: " + expression);
+            Console.Write("Infix tokens: ");
+
             List<string> infixTokens = new List<string>();
 
             // Regex stuff (Code help from: https://www.bytehide.com/blog/regex-csharp)
@@ -102,14 +101,16 @@ namespace SpreadsheetEngine {
             string regexPattern = @"([\+\-\*\/\(\)])|([a-zA-Z][a-zA-Z0-9]*)|(\d+(\.\d+)?)"; // Regex pattern for operators, variables, and numbers. @"(operators)|(variables)|(constants)"
             MatchCollection matches = Regex.Matches(expression, regexPattern); // use Regex to get all the individual items from the expression (assuming they are valid)
             foreach (Match m in matches) { // for each parsed item
-                Console.WriteLine(m.ToString());
+                Console.Write(m.ToString() + " ");
                 infixTokens.Add(m.Value); // add each item to the list of tokens
             } // End of code help from: https://www.bytehide.com/blog/regex-csharp
-
+            Console.WriteLine();
             return infixTokens;
         }
 
         private List<string> ConvertExpressionToPostfix(List<string> infixTokens) {
+            Console.Write("Postfix tokens: ");
+
             List<string> postfixTokens = new List<string>();
 
             return postfixTokens;
