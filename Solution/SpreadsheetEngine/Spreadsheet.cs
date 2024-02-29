@@ -7,6 +7,7 @@ using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace SpreadsheetEngine {
     /// <summary>
@@ -34,7 +35,13 @@ namespace SpreadsheetEngine {
             for (int row = 0; row < rows; row++) {
                 for (int column = 0; column < columns; column++) {
                     this.cellArray[row, column] = new SpreadsheetCell(row, column);
-                    this.cellArray[row, column].PropertyChanged += this.Cell_PropertyChanged!;
+
+                    // cast the cell to a SpreadsheetCell to subscribe to the property changed event
+                    Cell cell = this.cellArray[row, column]; // get the cell
+                    if (cell is SpreadsheetCell) { // ensure it is of type SpreadsheetCell
+                        SpreadsheetCell spreadsheetCell = (SpreadsheetCell)cell; // cast it
+                        spreadsheetCell.PropertyChanged += this.Cell_PropertyChanged!;
+                    }
                 }
             }
         }
@@ -73,6 +80,20 @@ namespace SpreadsheetEngine {
         }
 
         /// <summary>
+        /// Sets the text of a cell.
+        /// </summary>
+        /// <param name="rowIndex">The row of the cell.</param>
+        /// <param name="columnIndex">The column of the cell.</param>
+        /// <param name="text">The text to set the cell to.</param>
+        public void SetCellText(int rowIndex, int columnIndex, string text) {
+            Cell cell = this.cellArray[rowIndex, columnIndex]; // get the cell
+            if (cell is SpreadsheetCell) { // ensure it is of type SpreadsheetCell
+                SpreadsheetCell spreadsheetCell = (SpreadsheetCell)cell; // cast it to a spreadsheet cell (since cell doesn't have setters)
+                spreadsheetCell.Text = text; // now we can set the text
+            }
+        }
+
+        /// <summary>
         /// If the text of a cell changes, we need to evaluate the text and change the cell value here.
         /// </summary>
         /// <param name="sender">This is the object that is triggering an event.</param>
@@ -80,28 +101,88 @@ namespace SpreadsheetEngine {
         private void Cell_PropertyChanged(object sender, PropertyChangedEventArgs e) {
             // sender is the cell whos text just changed
             Cell cell = (Cell)sender;
+            if (cell is SpreadsheetCell) { // ensure it is of type SpreadsheetCell
+                SpreadsheetCell spreadsheetCell = (SpreadsheetCell)cell; // cast it
 
-            // if the entered text is an equation
-            if (cell.Text[0] == '=') {
-                // evaluate the equation
-                // for hw4 we just need to have equals another cell
-                int column = cell.Text[1] - 65; // get the column entered by the user (ascii values of A-Z start at 65)
-                int row = cell.Text[2] - 49;
+                // if the entered text is an equation
+                if (spreadsheetCell.Text[0] == '=') {
+                    // evaluate the equation
+                    // for hw4 we just need to have equals another cell
+                    // get the column entered by the user (ascii values of A-Z start at 65)
+                    int column = spreadsheetCell.Text[1] - 65;
 
-                string text = cell.Text;
-                string enteredInt = text.Substring(2);
-                row = int.Parse(enteredInt) - 1;
+                    // get the row entered by the user (ascii values of 0-9 start at 49)
+                    string text = spreadsheetCell.Text;
+                    string enteredInt = text.Substring(2); // get a substring for the entire n digit integer entered
+                    int row = int.Parse(enteredInt) - 1;
 
-                string value = this.GetCell(row, column).Value; // get the target cell's value
-                cell.Value = value; // copy it to the current cell
+                    string value = this.GetCell(row, column).Value; // get the target cell's value
+                    spreadsheetCell.Value = value; // copy it to the current cell
+                }
+
+                // if it is just text
+                else {
+                    spreadsheetCell.Value = cell.Text;
+                }
+
+                this.CellPropertyChanged(sender, e); // fire the PropertyChanged event for cell text changed
+            }
+        }
+
+        /// <summary>
+        /// A concrete class for cells.
+        /// We need a concrete inherited class since abstract base classes cant be instantiated.
+        /// This class must be in Spreadsheet and private becuase no other program should use this class.
+        /// </summary>
+        private class SpreadsheetCell : Cell, INotifyPropertyChanged {
+            /// <summary>
+            /// Initializes a new instance of the <see cref="SpreadsheetCell"/> class.
+            /// </summary>
+            /// <param name="row">Row index of the new cell.</param>
+            /// <param name="column">Column index of the new cell.</param>
+            public SpreadsheetCell(int row, int column)
+                : base(row, column) {
             }
 
-            // if it is just text
-            else {
-                cell.Value = cell.Text;
+            /// <summary>
+            /// Notify observers whenever a property changes.
+            /// </summary>
+            public event PropertyChangedEventHandler PropertyChanged = (sender, e) => { };
+
+            /// <summary>
+            /// Gets or sets the text that is typed into the cell (unevaluated equations etc).
+            /// </summary>
+            public new string Text {
+                get {
+                    return this.text;
+                }
+
+                set {
+                    // if text being set is the same text, don't call the property change event (since the text isn't actually being changed)
+                    if (this.text == value) {
+                        return;
+                    }
+
+                    // if new text is different
+                    this.text = value; // set new text
+                    this.PropertyChanged(this, new PropertyChangedEventArgs("Text")); // fire the PropertyChanged event for cell text changed
+                }
             }
 
-            this.CellPropertyChanged(sender, e); // fire the PropertyChanged event for cell text changed
+            /// <summary>
+            /// Gets or sets this represets the actual text that is displayed in the cell.
+            /// It will just be the text property if the text doesn't start with '='. OW it will be the evaluation of an equation.
+            /// Designed so only the spreadsheet class can set it, but anything can view it.
+            /// </summary>
+            public new string Value {
+                get {
+                    return this.value;
+                }
+
+                set {
+                    this.value = value;
+                } // setter is internal so only spreadsheet and cell can access it
+            }
         }
     }
 }

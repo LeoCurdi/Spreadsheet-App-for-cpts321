@@ -2,3 +2,6 @@
 
 # SA1500: Braces for multi-line statements should not share line
 dotnet_diagnostic.SA1500.severity = none
+
+# SA0001: XML comment analysis disabled
+dotnet_diagnostic.SA0001.severity = error
