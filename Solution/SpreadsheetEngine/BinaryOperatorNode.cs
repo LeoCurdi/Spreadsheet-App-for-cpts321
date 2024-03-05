@@ -19,7 +19,17 @@ namespace SpreadsheetEngine {
         /// <summary>
         /// The precedence of the operator (the importance in order of operations).
         /// </summary>
-        protected int precedence;
+        public static int precedence;
+        public int testField;
+        public int Precedence { get { return precedence; } }
+
+        protected enum Associativity {
+            Left,
+            Non,
+            Right,
+        };
+
+        protected Associativity associativity;
 
         /// <summary>
         /// the left child Node.

@@ -17,7 +17,8 @@ namespace SpreadsheetEngine {
         /// <param name="right">Reference to the right child node.</param>
         public MultiplicationNode(ExpressionTreeNode left, ExpressionTreeNode right)
             : base(left, right) {
-            this.precedence = 2;
+            precedence = 2;
+            this.associativity = Associativity.Left;
         }
 
         /// <summary>

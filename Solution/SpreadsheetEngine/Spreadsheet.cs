@@ -76,6 +76,9 @@ namespace SpreadsheetEngine {
         /// <param name="columnIndex">The column of the cell.</param>
         /// <returns>a reference to the cell at a specified row and column.</returns>
         public Cell GetCell(int rowIndex, int columnIndex) {
+            // error case
+            if (rowIndex < 0 || rowIndex >= this.RowCount || columnIndex < 0 || columnIndex >= this.ColumnCount) return null;
+
             return this.cellArray[rowIndex, columnIndex];
         }
 
