@@ -1,21 +1,23 @@
-﻿using System;
+﻿// Copyright (c) Leonardo Curdi - 11704166. All Rights Reserved.
+// Licensed under the MIT License. See LICENSE in the project root for license information.
+
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.Serialization.Formatters;
+using System.Security.Cryptography;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Xml;
 
 namespace SpreadsheetEngine {
-
     /// <summary>
     /// A class that takes in a string representation of an expression and evaluates it to a numeric value.
     /// </summary>
     public class ExpressionTree {
-
         /// <summary>
         /// A mapping between operators and their type of concrete Node class.
         /// </summary>
@@ -51,16 +53,17 @@ namespace SpreadsheetEngine {
         /// Initializes a new instance of the <see cref="ExpressionTree"/> class.
         /// Constructs the tree from an expression.
         /// </summary>
+        /// <param name="expression">The expression entered by the user (or the default expression).</param>
         public ExpressionTree(string expression) {
             // save the entered expression
             this.expression = expression;
 
-            // populate the operator map
-            operatorNodeMap.Clear();
-            operatorNodeMap['+'] = typeof(AdditionNode);
-            operatorNodeMap['-'] = typeof(SubtractionNode);
-            operatorNodeMap['*'] = typeof(MultiplicationNode);
-            operatorNodeMap['/'] = typeof(DivisionNode);
+            // populate the operator maps
+            this.operatorNodeMap.Clear();
+            this.operatorNodeMap['+'] = typeof(AdditionNode);
+            this.operatorNodeMap['-'] = typeof(SubtractionNode);
+            this.operatorNodeMap['*'] = typeof(MultiplicationNode);
+            this.operatorNodeMap['/'] = typeof(DivisionNode);
 
             // build the tree
             this.BuildExpressionTree();
@@ -97,22 +100,26 @@ namespace SpreadsheetEngine {
         /// Takes the given expression and builds the expression tree.
         /// </summary>
         private void BuildExpressionTree() {
+            Console.WriteLine(" - - - - - - - Building tree - - - - - - -");
+
             // tokenize the infix expression
-            List<string> infixTokens = TokenizeInfixExpression(this.expression);
+            List<string> infixTokens = this.TokenizeInfixExpression(this.expression);
 
             // convert the tokenized expression from infix to postfix
-            List<string> postfixTokens = ConvertExpressionToPostfix(infixTokens);
+            List<string> postfixTokens = this.ConvertExpressionToPostfix(infixTokens);
 
             // load the postfix expression into the tree
-            this.rootNode = LoadPostfixTokensIntoTree(postfixTokens);
+            this.rootNode = this.LoadPostfixTokensIntoTree(postfixTokens);
+
+            Console.WriteLine(" - - - - - - - Tree is built - - - - - - -\n");
         }
 
         /// <summary>
-        /// 
+        /// Takes an entered expression in string form, and tokenizes it into individual parts.
         /// Works for expressions with parentheses.
         /// </summary>
-        /// <param name="expression"></param>
-        /// <returns></returns>
+        /// <param name="expression">The entered string.</param>
+        /// <returns>The list of operators and operands.</returns>
         private List<string> TokenizeInfixExpression(string expression) {
             Console.WriteLine("Tokenizing: " + expression);
             Console.Write("Infix tokens: ");
@@ -129,7 +136,9 @@ namespace SpreadsheetEngine {
             foreach (Match m in matches) { // for each parsed item
                 Console.Write(m.ToString() + " ");
                 infixTokens.Add(m.Value); // add each item to the list of tokens
-            } // End of code help from: https://www.bytehide.com/blog/regex-csharp
+            }
+
+            // End of code help from: https://www.bytehide.com/blog/regex-csharp
             Console.WriteLine();
             return infixTokens;
         }
@@ -137,8 +146,8 @@ namespace SpreadsheetEngine {
         /// <summary>
         /// Uses Shunting Yard algorithm to convert infix to postfix.
         /// </summary>
-        /// <param name="infixTokens"></param>
-        /// <returns></returns>
+        /// <param name="infixTokens">A list of tokens in infix order.</param>
+        /// <returns>A list of tokens in postfix order.</returns>
         private List<string> ConvertExpressionToPostfix(List<string> infixTokens) {
             Console.Write("Postfix tokens: ");
 
@@ -153,45 +162,46 @@ namespace SpreadsheetEngine {
                     // while there are operators on top of the stack with greater or equal precedence, pop them into the result list.
                     while (operatorStack.Count > 0) {
                         string stackTop = operatorStack.Peek().ToString(); // get the top of the stack
-                        if (IsOperator(stackTop)) { // if its an operator
-                            // get the precedence of current token and stack top
-                            //Type nodeType = operatorNodeMap[stackTop[0]];
-                            //FieldInfo fieldInfo = nodeType.GetField("testField");
-                            //if (fieldInfo != null) Console.WriteLine("not null");
-                            //int stackTopPrecedence = (int)fieldInfo.GetValue(null);
+                        if (this.IsOperator(stackTop)) { // if the top is an operator
+                            /*
+                                // get the precedence of current token and stack top
+                                Type nodeType = operatorNodeMap[stackTop[0]];
+                                FieldInfo fieldInfo = nodeType.GetField("testField");
+                                if (fieldInfo != null) Console.WriteLine("not null");
+                                int stackTopPrecedence = (int)fieldInfo.GetValue(null);
 
-                            //System.Reflection.MemberInfo info = typeof(AdditionNode);
-                            //object[] attributes = info.GetCustomAttributes(true);
-                            //for (int i = 0; i < attributes.Length; i++) {
-                            //    System.Console.WriteLine(attributes[i]);
-                            //}
+                                System.Reflection.MemberInfo info = typeof(AdditionNode);
+                                object[] attributes = info.GetCustomAttributes(true);
+                                for (int i = 0; i < attributes.Length; i++) {
+                                    System.Console.WriteLine(attributes[i]);
+                                }
 
-                            //FieldInfo fieldInfo = nodeType.GetField("precedence", BindingFlags.Public | BindingFlags.Static);
-                            //if (fieldInfo != null) {
-                            //    int precedenceValue = (int)fieldInfo.GetValue(null);
-                            //    // Use precedenceValue as needed
-                            //} else {
-                            //    Console.WriteLine("Precedence field not found.");
-                            //}
+                                FieldInfo fieldInfo = nodeType.GetField("precedence", BindingFlags.Public | BindingFlags.Static);
+                                if (fieldInfo != null) {
+                                    int precedenceValue = (int)fieldInfo.GetValue(null);
+                                    // Use precedenceValue as needed
+                                } else {
+                                    Console.WriteLine("Precedence field not found.");
+                                }
 
-                            //int stackTopPrecedence = (int)nodeType.GetProperty("Precedence", BindingFlags.Static | BindingFlags.Public).GetValue(null);
-                            //nodeType = operatorNodeMap[token[0]];
-                            //int tokenPrecedence = (int)nodeType.GetProperty("Precedence", BindingFlags.Static | BindingFlags.Public).GetValue(null);
+                                int stackTopPrecedence = (int)nodeType.GetProperty("Precedence", BindingFlags.Static | BindingFlags.Public).GetValue(null);
+                                nodeType = operatorNodeMap[token[0]];
+                                int tokenPrecedence = (int)nodeType.GetProperty("Precedence", BindingFlags.Static | BindingFlags.Public).GetValue(null);
 
-                            //Object value = nodeType.GetProperty("Precedence");
-                            //Console.WriteLine("\nvalue: " + value.ToString() + "\n");
+                                Object value = nodeType.GetProperty("Precedence");
+                                Console.WriteLine("\nvalue: " + value.ToString() + "\n");
 
-                            //int stackTopPrecedence = nodeType.GetProperty("Precedence").GetValue(null);
-                            //nodeType = operatorNodeMap[token[0]];
-                            //int tokenPrecedence = (int)nodeType.GetProperty("Precedence").GetValue(null);
-
-                            if (operatorPrecedences[stackTop[0]] >= operatorPrecedences[token[0]]) { // if the tops precedence is greater equal
+                                int stackTopPrecedence = nodeType.GetProperty("Precedence").GetValue(null);
+                                nodeType = operatorNodeMap[token[0]];
+                                int tokenPrecedence = (int)nodeType.GetProperty("Precedence").GetValue(null);
+                            */
+                            if (this.operatorPrecedences[stackTop[0]] >= this.operatorPrecedences[token[0]]) { // if the stack tops precedence is greater equal
                                 postfixTokens.Add(operatorStack.Pop().ToString()); // pop it from the stack into the result list
                             }
                             else { // if top is not equal or greater precedence stop the loop
                                 break;
                             }
-                        } else { // if top is not equal or greater precedence stop the loop
+                        } else { // if top is not an operator stop the loop
                             break;
                         }
                     }
@@ -232,11 +242,18 @@ namespace SpreadsheetEngine {
             foreach (string token in postfixTokens) {
                 Console.Write(token.ToString() + " ");
             }
+
             Console.WriteLine();
 
             return postfixTokens;
         }
 
+        /// <summary>
+        /// Takes a list of tokens in postfix order and builds an expression tree.
+        /// </summary>
+        /// <param name="postfixTokens">The list of tokens in postfix.</param>
+        /// <returns>A reference to the root node of the new tree.</returns>
+        /// <exception cref="ArgumentException">Thrown when an input expression is invalid.</exception>
         private ExpressionTreeNode LoadPostfixTokensIntoTree(List<string> postfixTokens) {
             // use a stack to get the postfix tokens in reverse
             Stack<ExpressionTreeNode> stack = new Stack<ExpressionTreeNode>();
@@ -286,13 +303,23 @@ namespace SpreadsheetEngine {
         /// <param name="token">The token that we want to see is an operator.</param>
         /// <returns>A true or false.</returns>
         private bool IsOperator(string token) {
-            return operatorNodeMap.ContainsKey(token[0]);
+            return this.operatorNodeMap.ContainsKey(token[0]);
         }
 
+        /// <summary>
+        /// Helper for checking if a token is a variable.
+        /// </summary>
+        /// <param name="token">The token that we want to see is an varibale.</param>
+        /// <returns>A true or false.</returns>
         private bool IsVariable(string token) {
             return Regex.IsMatch(token, @"([a-zA-Z][a-zA-Z0-9]*)");
         }
 
+        /// <summary>
+        /// Helper for checking if a token is a constant.
+        /// </summary>
+        /// <param name="token">The token that we want to see is a constant.</param>
+        /// <returns>A true or false.</returns>
         private bool IsConstant(string token) {
             return Regex.IsMatch(token, @"(\d+(\.\d+)?)");
         }

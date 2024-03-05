@@ -1,16 +1,17 @@
-﻿using System;
+﻿// Copyright (c) Leonardo Curdi - 11704166. All Rights Reserved.
+// Licensed under the MIT License. See LICENSE in the project root for license information.
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace SpreadsheetEngine {
-
     /// <summary>
     /// A concrete inherited Node containing a variable in the expression.
     /// </summary>
     public class VariableNode : ExpressionTreeNode {
-
         /// <summary>
         /// The raw text of the variable.
         /// </summary>
