@@ -246,6 +246,10 @@ namespace SpreadsheetEngine {
                 // if its an operator
                 if (this.IsOperator(token)) {
                     // take the top two tokens in the stack as the right and left children of the operator
+                    if (stack.Count < 2) { // error case
+                        throw new ArgumentException("Expression is invalid.");
+                    }
+
                     ExpressionTreeNode right = stack.Pop();
                     ExpressionTreeNode left = stack.Pop();
 

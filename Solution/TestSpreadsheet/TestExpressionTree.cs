@@ -84,11 +84,22 @@ namespace SpreadsheetTests {
         /// </summary>
         [Test]
         public void TestComplexExpression() {
-            this.testTree = new ExpressionTree("40/hello-.2*30+4.5");
+            this.testTree = new ExpressionTree("40/hello-0.2*30+4.5*(A1/B3)");
             this.testTree.SetVariable("hello", 2);
+            this.testTree.SetVariable("A1", 7);
+            this.testTree.SetVariable("B3", 2.5);
             Assert.That(
                 this.testTree.Evaluate(),
-                Is.EqualTo(23.9));
+                Is.EqualTo(26.6));
+        }
+
+        /// <summary>
+        /// Test evaluating an invalid expression.
+        /// </summary>
+        [Test]
+        public void TestInvalidExpression() {
+            // check if it throws an exception
+            Assert.Throws<ArgumentException>(() => new ExpressionTree("2-*30"));
         }
 
         // Note: was going to test exception cases such as divide by zero but it
