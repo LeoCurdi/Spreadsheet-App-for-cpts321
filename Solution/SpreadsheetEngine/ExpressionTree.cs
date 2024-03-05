@@ -195,7 +195,7 @@ namespace SpreadsheetEngine {
                             break;
                         }
                     }
-                    
+
                     // push the current operator to the stack
                     operatorStack.Push(token[0]);
                 }
@@ -238,8 +238,41 @@ namespace SpreadsheetEngine {
         }
 
         private ExpressionTreeNode LoadPostfixTokensIntoTree(List<string> postfixTokens) {
+            // use a stack to get the postfix tokens in reverse
+            Stack<ExpressionTreeNode> stack = new Stack<ExpressionTreeNode>();
 
-            return new VariableNode("memes", variables);
+            // iterate over each token
+            foreach (string token in postfixTokens) {
+                // if its an operator
+                if (this.IsOperator(token)) {
+                    // take the top two tokens in the stack as the right and left children of the operator
+                    ExpressionTreeNode right = stack.Pop();
+                    ExpressionTreeNode left = stack.Pop();
+
+                    // create the correct operator node and push it to the stack
+                    Type operatorNodetype = this.operatorNodeMap[token[0]]; // get the type of node corresponding to the operator
+                    ExpressionTreeNode operatorNode = (ExpressionTreeNode)Activator.CreateInstance(operatorNodetype, new object[] { left, right }); // create an instance of the type of node, then cast it as a base class since we don't know what the instance type is
+                    stack.Push(operatorNode);
+                }
+
+                // if its a variable
+                else if (this.IsVariable(token)) {
+                    stack.Push(new VariableNode(token, this.variables)); // create a varibale node and push it to the stack
+                }
+
+                // if its a constant
+                else if (this.IsConstant(token)) {
+                    stack.Push(new ConstantNode(double.Parse(token))); // create a constant node and push it to the stack
+                }
+            }
+
+            // error case
+            if (stack.Count != 1) {
+                throw new ArgumentException("Expression is invalid.");
+            }
+
+            // return the root node
+            return stack.Pop();
         }
 
         /// <summary>
