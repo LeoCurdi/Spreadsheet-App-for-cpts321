@@ -20,9 +20,19 @@ namespace SpreadsheetEngine {
         /// <param name="right">Reference to the right child node.</param>
         public AdditionNode(ExpressionTreeNode left, ExpressionTreeNode right)
             : base(left, right) {
-            precedence = 1;
-            this.associativity = Associativity.Left;
         }
+
+        /// <summary>
+        /// Gets the precedence of the operator.
+        /// Set the value directly rather than in the constructor, since its static.
+        /// </summary>
+        public static int Precedence => 1;
+
+        /// <summary>
+        /// Gets the associativity of the operator.
+        /// Set the value directly rather than in the constructor, since its static.
+        /// </summary>
+        protected static Associativity Associativity => Associativity.Left;
 
         /// <summary>
         /// Implementation of abstract Evaluate.

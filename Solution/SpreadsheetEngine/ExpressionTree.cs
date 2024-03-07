@@ -24,17 +24,6 @@ namespace SpreadsheetEngine {
         private Dictionary<char, Type> operatorNodeMap = new Dictionary<char, Type>();
 
         /// <summary>
-        /// A lookup table for the precedences of each operator.
-        /// Note: this was meant to be removed with the refactoring, which will have to wait until hw6.
-        /// </summary>
-        private Dictionary<char, int> operatorPrecedences = new Dictionary<char, int>() {
-            { '+', 1 },
-            { '-', 1 },
-            { '*', 2 },
-            { '/', 2 },
-        };
-
-        /// <summary>
         /// The entered expression.
         /// </summary>
         private string expression;
@@ -161,44 +150,37 @@ namespace SpreadsheetEngine {
                 if (this.IsOperator(token)) {
                     // while there are operators on top of the stack with greater or equal precedence, pop them into the result list.
                     while (operatorStack.Count > 0) {
-                        string stackTop = operatorStack.Peek().ToString(); // get the top of the stack
-                        if (this.IsOperator(stackTop)) { // if the top is an operator
-                            /*
-                                // get the precedence of current token and stack top
-                                Type nodeType = operatorNodeMap[stackTop[0]];
-                                FieldInfo fieldInfo = nodeType.GetField("testField");
-                                if (fieldInfo != null) Console.WriteLine("not null");
-                                int stackTopPrecedence = (int)fieldInfo.GetValue(null);
+                        // get the top of the stack
+                        string stackTop = operatorStack.Peek().ToString();
 
-                                System.Reflection.MemberInfo info = typeof(AdditionNode);
-                                object[] attributes = info.GetCustomAttributes(true);
-                                for (int i = 0; i < attributes.Length; i++) {
-                                    System.Console.WriteLine(attributes[i]);
+                        // if the top is an operator
+                        if (this.IsOperator(stackTop)) {
+                            int stackTopPrecedence = 0, tokenPrecedence = 0;
+
+                            // get the precedence of the stack top
+                            Type nodeType = this.operatorNodeMap[stackTop[0]];
+                            PropertyInfo propertyInfo = nodeType.GetProperty("Precedence");
+                            if (propertyInfo != null) {
+                                object propertyValue = propertyInfo.GetValue(nodeType);
+                                if (propertyValue is int) {
+                                    stackTopPrecedence = (int)propertyValue;
                                 }
-
-                                FieldInfo fieldInfo = nodeType.GetField("precedence", BindingFlags.Public | BindingFlags.Static);
-                                if (fieldInfo != null) {
-                                    int precedenceValue = (int)fieldInfo.GetValue(null);
-                                    // Use precedenceValue as needed
-                                } else {
-                                    Console.WriteLine("Precedence field not found.");
-                                }
-
-                                int stackTopPrecedence = (int)nodeType.GetProperty("Precedence", BindingFlags.Static | BindingFlags.Public).GetValue(null);
-                                nodeType = operatorNodeMap[token[0]];
-                                int tokenPrecedence = (int)nodeType.GetProperty("Precedence", BindingFlags.Static | BindingFlags.Public).GetValue(null);
-
-                                Object value = nodeType.GetProperty("Precedence");
-                                Console.WriteLine("\nvalue: " + value.ToString() + "\n");
-
-                                int stackTopPrecedence = nodeType.GetProperty("Precedence").GetValue(null);
-                                nodeType = operatorNodeMap[token[0]];
-                                int tokenPrecedence = (int)nodeType.GetProperty("Precedence").GetValue(null);
-                            */
-                            if (this.operatorPrecedences[stackTop[0]] >= this.operatorPrecedences[token[0]]) { // if the stack tops precedence is greater equal
-                                postfixTokens.Add(operatorStack.Pop().ToString()); // pop it from the stack into the result list
                             }
-                            else { // if top is not equal or greater precedence stop the loop
+
+                            // get the precedence of the current token
+                            nodeType = this.operatorNodeMap[token[0]];
+                            propertyInfo = nodeType.GetProperty("Precedence");
+                            if (propertyInfo != null) {
+                                object propertyValue = propertyInfo.GetValue(nodeType);
+                                if (propertyValue is int) {
+                                    tokenPrecedence = (int)propertyValue;
+                                }
+                            }
+
+                            // if the stack tops precedence is greater equal
+                            if (stackTopPrecedence >= tokenPrecedence) {
+                                postfixTokens.Add(operatorStack.Pop().ToString()); // pop it from the stack into the result list
+                            } else { // if top is not equal or greater precedence stop the loop
                                 break;
                             }
                         } else { // if top is not an operator stop the loop

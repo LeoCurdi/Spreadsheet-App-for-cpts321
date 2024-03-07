@@ -32,17 +32,7 @@ namespace SpreadsheetEngine {
     /// A concrete inherited Node containing a binary operator.
     /// </summary>
     public abstract class BinaryOperatorNode : ExpressionTreeNode {
-        /// <summary>
-        /// The precedence of the operator (the importance in order of operations).
-        /// </summary>
 #pragma warning disable SA1401 // Fields should be private
-        protected static int precedence;
-
-        /// <summary>
-        /// The associativity of the operator.
-        /// </summary>
-        protected Associativity associativity;
-
         /// <summary>
         /// the left child Node.
         /// </summary>
@@ -62,13 +52,6 @@ namespace SpreadsheetEngine {
         public BinaryOperatorNode(ExpressionTreeNode left, ExpressionTreeNode right) {
             this.leftNode = left;
             this.rightNode = right;
-        }
-
-        /// <summary>
-        /// Gets the precedence field.
-        /// </summary>
-        public int Precedence {
-            get { return precedence; }
         }
 
         // were not required to impelement Evaluate() here, since this is also an abstract class.
