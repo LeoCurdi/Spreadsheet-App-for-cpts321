@@ -32,7 +32,7 @@ namespace SpreadsheetEngine {
         /// Gets the associativity of the operator.
         /// Set the value directly rather than in the constructor, since its static.
         /// </summary>
-        protected static Associativity Associativity => Associativity.Left;
+        public static Associativity Associativity => Associativity.Left;
 
         /// <summary>
         /// Implementation of abstract Evaluate.

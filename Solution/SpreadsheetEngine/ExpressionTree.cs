@@ -23,6 +23,8 @@ namespace SpreadsheetEngine {
         /// </summary>
         private Dictionary<char, Type> operatorNodeMap = new Dictionary<char, Type>();
 
+        private OperatorNodeFactory operatorNodeFactory = new OperatorNodeFactory();
+
         /// <summary>
         /// The entered expression.
         /// </summary>
