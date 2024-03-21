@@ -83,12 +83,13 @@ namespace SpreadsheetEngine {
         /// <param name="oper">The operator char.</param>
         /// <returns>The created node.</returns>
         /// <exception cref="Exception">If a char is not a recognized operator.</exception>
-        public BinaryOperatorNode CreateOperatorNode(char oper) {
+        public BinaryOperatorNode CreateOperatorNode(char oper, ExpressionTreeNode left, ExpressionTreeNode right) {
             // if the operator is valid
             if (this.operatorNodeMap.ContainsKey(oper)) {
+                Console.WriteLine("op is valid");
                 // create an object of the corresponding operator sub class
-                object operatorNodeSubclass = System.Activator.CreateInstance(this.operatorNodeMap[oper]);
-
+                object operatorNodeSubclass = System.Activator.CreateInstance(this.operatorNodeMap[oper], new object[] { left, right });
+                Console.WriteLine("making progress");
                 // error checking
                 if (operatorNodeSubclass is BinaryOperatorNode) {
                     // return the node

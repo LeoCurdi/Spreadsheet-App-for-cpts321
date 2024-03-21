@@ -117,7 +117,7 @@ namespace SpreadsheetTests {
         [Test]
         public void TestCreateOperatorNode() {
             OperatorNodeFactory factory = new OperatorNodeFactory();
-            BinaryOperatorNode node = factory.CreateOperatorNode('+');
+            BinaryOperatorNode node = factory.CreateOperatorNode('+', null, null);
             Assert.IsTrue(node is AdditionNode);
         }
 

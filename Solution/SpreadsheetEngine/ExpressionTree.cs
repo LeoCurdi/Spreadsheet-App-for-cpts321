@@ -260,8 +260,12 @@ namespace SpreadsheetEngine {
                     ExpressionTreeNode left = stack.Pop();
 
                     // create the correct operator node and push it to the stack
-                    Type operatorNodetype = this.operatorNodeMap[token[0]]; // get the type of node corresponding to the operator
-                    ExpressionTreeNode operatorNode = (ExpressionTreeNode)Activator.CreateInstance(operatorNodetype, new object[] { left, right }); // create an instance of the type of node, then cast it as a base class since we don't know what the instance type is
+                    ExpressionTreeNode operatorNode = this.operatorNodeFactory.CreateOperatorNode(token[0], left, right);
+
+
+                    //Type operatorNodetype = this.operatorNodeMap[token[0]]; // get the type of node corresponding to the operator
+                    //ExpressionTreeNode operatorNode = (ExpressionTreeNode)Activator.CreateInstance(operatorNodetype, new object[] { left, right }); // create an instance of the type of node, then cast it as a base class since we don't know what the instance type is
+                    
                     stack.Push(operatorNode);
                 }
 
