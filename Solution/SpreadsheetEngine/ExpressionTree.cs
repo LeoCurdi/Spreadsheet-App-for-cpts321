@@ -23,6 +23,9 @@ namespace SpreadsheetEngine {
         /// </summary>
         private Dictionary<char, Type> operatorNodeMap = new Dictionary<char, Type>();
 
+        /// <summary>
+        /// An instance of the OperatorNodeFactory class, which is used to create nodes of the correct sub class.
+        /// </summary>
         private OperatorNodeFactory operatorNodeFactory = new OperatorNodeFactory();
 
         /// <summary>
