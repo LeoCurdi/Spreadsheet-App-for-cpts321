@@ -124,7 +124,16 @@ namespace SpreadsheetEngine {
         /// <param name="oper">The operator char.</param>
         /// <returns>The associativity.</returns>
         public Associativity GetAssociativity(char oper) {
-            return Associativity.Right;
+            Type nodeType = this.operatorNodeMap[oper];
+            PropertyInfo propertyInfo = nodeType.GetProperty("Associativity");
+            if (propertyInfo != null) {
+                object propertyValue = propertyInfo.GetValue(nodeType);
+                if (propertyValue is Associativity) {
+                    return (Associativity)propertyValue;
+                }
+            }
+
+            return Associativity.Non;
         }
 
         /// <summary>
