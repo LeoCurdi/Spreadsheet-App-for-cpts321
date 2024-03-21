@@ -27,8 +27,20 @@ namespace SpreadsheetEngine {
         }
 
         public BinaryOperatorNode CreateOperatorNode(char oper) {
+            // if the operator is valid
+            if (this.operatorNodeMap.ContainsKey(oper)) {
+                // create an object of the corresponding operator sub class
+                object operatorNodeSubclass = System.Activator.CreateInstance(this.operatorNodeMap[oper]);
 
-            return new SubtractionNode(null, null);
+                // error checking
+                if (operatorNodeSubclass is BinaryOperatorNode) {
+                    // return the node
+                    return (BinaryOperatorNode)operatorNodeSubclass;
+                }
+            }
+
+            // else throw an exception
+            throw new Exception("Invalid operator");
         }
 
         public int GetPrecedence(char oper) {
