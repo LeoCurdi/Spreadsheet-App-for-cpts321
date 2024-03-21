@@ -29,6 +29,11 @@ namespace SpreadsheetEngine {
         public static int Precedence => 1;
 
         /// <summary>
+        /// Gets the operator character corresponding to the type of operator node.
+        /// </summary>
+        public static char Operator => '+';
+
+        /// <summary>
         /// Gets the associativity of the operator.
         /// Set the value directly rather than in the constructor, since its static.
         /// </summary>

@@ -102,7 +102,56 @@ namespace SpreadsheetTests {
             Assert.Throws<ArgumentException>(() => new ExpressionTree("2-*30"));
         }
 
-        // Note: was going to test exception cases such as divide by zero but it
-        // states in the instructions that we may assume only valid expressions are entered.
+        /// <summary>
+        /// Test dividing by zero.
+        /// </summary>
+        [Test]
+        public void TestDivideByZero() {
+            this.testTree = new ExpressionTree("5/0");
+            Assert.Throws<ArgumentException>(() => this.testTree.Evaluate());
+        }
+
+        /// <summary>
+        /// Uses the factory to create an addition operator node, and checks if its type additionNode.
+        /// </summary>
+        [Test]
+        public void TestCreateOperatorNode() {
+            OperatorNodeFactory factory = new OperatorNodeFactory();
+            BinaryOperatorNode node = factory.CreateOperatorNode('+');
+            Assert.IsTrue(node is AdditionNode);
+        }
+
+        /// <summary>
+        /// Tests getting the precedence of a type of operator.
+        /// </summary>
+        [Test]
+        public void TestGetPrecedence() {
+            OperatorNodeFactory factory = new OperatorNodeFactory();
+            Assert.That(
+                factory.GetPrecedence('*'),
+                Is.EqualTo(2));
+        }
+
+        /// <summary>
+        /// Tests getting the associativity of a type of operator.
+        /// </summary>
+        [Test]
+        public void TestGetAssociativity() {
+            OperatorNodeFactory factory = new OperatorNodeFactory();
+            Assert.That(
+                factory.GetAssociativity('+'),
+                Is.EqualTo(Associativity.Left));
+        }
+
+        /// <summary>
+        /// Tests whether a char is an operator.
+        /// </summary>
+        [Test]
+        public void TestIsOperator() {
+            OperatorNodeFactory factory = new OperatorNodeFactory();
+            Assert.That(
+                factory.IsOperator('a'),
+                Is.EqualTo(false));
+        }
     }
 }

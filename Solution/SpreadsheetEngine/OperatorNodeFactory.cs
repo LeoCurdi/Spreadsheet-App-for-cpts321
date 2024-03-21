@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -12,6 +13,11 @@ namespace SpreadsheetEngine {
 
         private delegate void OnOperator(char theOperator, Type type);
 
+        /// <summary>
+        /// Iterates all operator classes that are loaded.
+        /// 
+        /// </summary>
+        /// <param name="onOperator"></param>
         private void TraverseAllOperators(OnOperator onOperator) {
 
         }
@@ -20,19 +26,20 @@ namespace SpreadsheetEngine {
             return new List<char> { '(', ')', '[', };
         }
 
-        public BinaryOperatorNode CreateOperatorNode(char theOperator) {
-            return new AdditionNode(null, null);
+        public BinaryOperatorNode CreateOperatorNode(char oper) {
+
+            return new SubtractionNode(null, null);
         }
 
-        public int GetPrecedence(char theOperator) {
+        public int GetPrecedence(char oper) {
             return 0;
         }
 
-        public Associativity GetAssociativity(char theOperator) {
-            return Associativity.Left;
+        public Associativity GetAssociativity(char oper) {
+            return Associativity.Right;
         }
 
-        public bool IsOperator(char aChar) {
+        public bool IsOperator(char character) {
             return false;
         }
     }
