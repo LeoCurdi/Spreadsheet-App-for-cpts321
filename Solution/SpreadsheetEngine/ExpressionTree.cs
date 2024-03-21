@@ -160,27 +160,29 @@ namespace SpreadsheetEngine {
 
                         // if the top is an operator
                         if (this.IsOperator(stackTop)) {
-                            int stackTopPrecedence = 0, tokenPrecedence = 0;
-
                             // get the precedence of the stack top
-                            Type nodeType = this.operatorNodeMap[stackTop[0]];
-                            PropertyInfo propertyInfo = nodeType.GetProperty("Precedence");
-                            if (propertyInfo != null) {
-                                object propertyValue = propertyInfo.GetValue(nodeType);
-                                if (propertyValue is int) {
-                                    stackTopPrecedence = (int)propertyValue;
-                                }
-                            }
+                            int stackTopPrecedence = this.operatorNodeFactory.GetPrecedence(stackTop[0]);
+
+                            //Type nodeType = this.operatorNodeMap[stackTop[0]];
+                            //PropertyInfo propertyInfo = nodeType.GetProperty("Precedence");
+                            //if (propertyInfo != null) {
+                            //    object propertyValue = propertyInfo.GetValue(nodeType);
+                            //    if (propertyValue is int) {
+                            //        stackTopPrecedence = (int)propertyValue;
+                            //    }
+                            //}
 
                             // get the precedence of the current token
-                            nodeType = this.operatorNodeMap[token[0]];
-                            propertyInfo = nodeType.GetProperty("Precedence");
-                            if (propertyInfo != null) {
-                                object propertyValue = propertyInfo.GetValue(nodeType);
-                                if (propertyValue is int) {
-                                    tokenPrecedence = (int)propertyValue;
-                                }
-                            }
+                            int tokenPrecedence = this.operatorNodeFactory.GetPrecedence(token[0]);
+
+                            //nodeType = this.operatorNodeMap[token[0]];
+                            //propertyInfo = nodeType.GetProperty("Precedence");
+                            //if (propertyInfo != null) {
+                            //    object propertyValue = propertyInfo.GetValue(nodeType);
+                            //    if (propertyValue is int) {
+                            //        tokenPrecedence = (int)propertyValue;
+                            //    }
+                            //}
 
                             // if the stack tops precedence is greater equal
                             if (stackTopPrecedence >= tokenPrecedence) {

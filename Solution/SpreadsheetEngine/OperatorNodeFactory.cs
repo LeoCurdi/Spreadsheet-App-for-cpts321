@@ -106,6 +106,15 @@ namespace SpreadsheetEngine {
         /// <param name="oper">The operator char.</param>
         /// <returns>The precedence.</returns>
         public int GetPrecedence(char oper) {
+            Type nodeType = this.operatorNodeMap[oper];
+            PropertyInfo propertyInfo = nodeType.GetProperty("Precedence");
+            if (propertyInfo != null) {
+                object propertyValue = propertyInfo.GetValue(nodeType);
+                if (propertyValue is int) {
+                    return (int)propertyValue;
+                }
+            }
+
             return 0;
         }
 
