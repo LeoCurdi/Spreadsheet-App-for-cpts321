@@ -19,11 +19,6 @@ namespace SpreadsheetEngine {
     /// </summary>
     public class ExpressionTree {
         /// <summary>
-        /// A mapping between operators and their type of concrete Node class.
-        /// </summary>
-        private Dictionary<char, Type> operatorNodeMap = new Dictionary<char, Type>();
-
-        /// <summary>
         /// An instance of the OperatorNodeFactory class, which is used to create nodes of the correct sub class.
         /// </summary>
         private OperatorNodeFactory operatorNodeFactory = new OperatorNodeFactory();
@@ -51,13 +46,6 @@ namespace SpreadsheetEngine {
         public ExpressionTree(string expression) {
             // save the entered expression
             this.expression = expression;
-
-            // populate the operator maps
-            this.operatorNodeMap.Clear();
-            this.operatorNodeMap['+'] = typeof(AdditionNode);
-            this.operatorNodeMap['-'] = typeof(SubtractionNode);
-            this.operatorNodeMap['*'] = typeof(MultiplicationNode);
-            this.operatorNodeMap['/'] = typeof(DivisionNode);
 
             // build the tree
             this.BuildExpressionTree();
@@ -160,29 +148,9 @@ namespace SpreadsheetEngine {
 
                         // if the top is an operator
                         if (this.operatorNodeFactory.IsOperator(stackTop[0])) {
-                            // get the precedence of the stack top
+                            // get the precedence of the stack top and current token
                             int stackTopPrecedence = this.operatorNodeFactory.GetPrecedence(stackTop[0]);
-
-                            //Type nodeType = this.operatorNodeMap[stackTop[0]];
-                            //PropertyInfo propertyInfo = nodeType.GetProperty("Precedence");
-                            //if (propertyInfo != null) {
-                            //    object propertyValue = propertyInfo.GetValue(nodeType);
-                            //    if (propertyValue is int) {
-                            //        stackTopPrecedence = (int)propertyValue;
-                            //    }
-                            //}
-
-                            // get the precedence of the current token
                             int tokenPrecedence = this.operatorNodeFactory.GetPrecedence(token[0]);
-
-                            //nodeType = this.operatorNodeMap[token[0]];
-                            //propertyInfo = nodeType.GetProperty("Precedence");
-                            //if (propertyInfo != null) {
-                            //    object propertyValue = propertyInfo.GetValue(nodeType);
-                            //    if (propertyValue is int) {
-                            //        tokenPrecedence = (int)propertyValue;
-                            //    }
-                            //}
 
                             // if the stack tops precedence is greater equal
                             if (stackTopPrecedence >= tokenPrecedence) {
@@ -261,11 +229,6 @@ namespace SpreadsheetEngine {
 
                     // create the correct operator node and push it to the stack
                     ExpressionTreeNode operatorNode = this.operatorNodeFactory.CreateOperatorNode(token[0], left, right);
-
-
-                    //Type operatorNodetype = this.operatorNodeMap[token[0]]; // get the type of node corresponding to the operator
-                    //ExpressionTreeNode operatorNode = (ExpressionTreeNode)Activator.CreateInstance(operatorNodetype, new object[] { left, right }); // create an instance of the type of node, then cast it as a base class since we don't know what the instance type is
-                    
                     stack.Push(operatorNode);
                 }
 
@@ -288,16 +251,6 @@ namespace SpreadsheetEngine {
             // return the root node
             return stack.Pop();
         }
-
-        /// <summary>
-        /// Helper for checking if a token is an operator.
-        /// Checks if the token exists in the operator dictionary.
-        /// </summary>
-        /// <param name="token">The token that we want to see is an operator.</param>
-        /// <returns>A true or false.</returns>
-        //private bool IsOperator(string token) {
-        //    return this.operatorNodeMap.ContainsKey(token[0]);
-        //}
 
         /// <summary>
         /// Helper for checking if a token is a variable.
