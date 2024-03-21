@@ -152,14 +152,14 @@ namespace SpreadsheetEngine {
             // iterate over every token in the input list
             foreach (string token in infixTokens) {
                 // if token is an operator
-                if (this.IsOperator(token)) {
+                if (this.operatorNodeFactory.IsOperator(token[0])) {
                     // while there are operators on top of the stack with greater or equal precedence, pop them into the result list.
                     while (operatorStack.Count > 0) {
                         // get the top of the stack
                         string stackTop = operatorStack.Peek().ToString();
 
                         // if the top is an operator
-                        if (this.IsOperator(stackTop)) {
+                        if (this.operatorNodeFactory.IsOperator(stackTop[0])) {
                             // get the precedence of the stack top
                             int stackTopPrecedence = this.operatorNodeFactory.GetPrecedence(stackTop[0]);
 
@@ -250,7 +250,7 @@ namespace SpreadsheetEngine {
             // iterate over each token
             foreach (string token in postfixTokens) {
                 // if its an operator
-                if (this.IsOperator(token)) {
+                if (this.operatorNodeFactory.IsOperator(token[0])) {
                     // take the top two tokens in the stack as the right and left children of the operator
                     if (stack.Count < 2) { // error case
                         throw new ArgumentException("Expression is invalid.");
@@ -291,9 +291,9 @@ namespace SpreadsheetEngine {
         /// </summary>
         /// <param name="token">The token that we want to see is an operator.</param>
         /// <returns>A true or false.</returns>
-        private bool IsOperator(string token) {
-            return this.operatorNodeMap.ContainsKey(token[0]);
-        }
+        //private bool IsOperator(string token) {
+        //    return this.operatorNodeMap.ContainsKey(token[0]);
+        //}
 
         /// <summary>
         /// Helper for checking if a token is a variable.

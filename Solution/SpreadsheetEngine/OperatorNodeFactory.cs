@@ -142,7 +142,7 @@ namespace SpreadsheetEngine {
         /// <param name="character">The input character.</param>
         /// <returns>true or false.</returns>
         public bool IsOperator(char character) {
-            return false;
+            return this.operatorNodeMap.ContainsKey(character);
         }
     }
 }

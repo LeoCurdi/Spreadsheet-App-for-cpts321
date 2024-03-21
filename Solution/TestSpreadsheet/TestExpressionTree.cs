@@ -147,11 +147,22 @@ namespace SpreadsheetTests {
         /// Tests whether a char is an operator.
         /// </summary>
         [Test]
-        public void TestIsOperator() {
+        public void TestIsOperatorInvalid() {
             OperatorNodeFactory factory = new OperatorNodeFactory();
             Assert.That(
                 factory.IsOperator('a'),
                 Is.EqualTo(false));
+        }
+
+        /// <summary>
+        /// Tests whether a char is an operator.
+        /// </summary>
+        [Test]
+        public void TestIsOperatorValid() {
+            OperatorNodeFactory factory = new OperatorNodeFactory();
+            Assert.That(
+                factory.IsOperator('*'),
+                Is.EqualTo(true));
         }
     }
 }
