@@ -19,6 +19,8 @@ namespace SpreadsheetEngine {
         /// </summary>
         private Cell[,] cellArray;
 
+        private ExpressionTree expressionTree;
+
         /// <summary>
         /// Initializes a new instance of the <see cref="Spreadsheet"/> class.
         /// Constructor.
@@ -115,20 +117,39 @@ namespace SpreadsheetEngine {
             if (cell is SpreadsheetCell) { // ensure it is of type SpreadsheetCell
                 SpreadsheetCell spreadsheetCell = (SpreadsheetCell)cell; // cast it
 
-                // if the entered text is an equation
+                // if the entered text is an equation - evaluate it
                 if (spreadsheetCell.Text[0] == '=') {
-                    // evaluate the equation
-                    // for hw4 we just need to have equals another cell.
-                    // get the column entered by the user (ascii values of A-Z start at 65)
-                    int column = spreadsheetCell.Text[1] - 65;
+                    // give the equation to the expression tree
+                    this.expressionTree = new ExpressionTree(spreadsheetCell.Text);
 
-                    // get the row entered by the user (ascii values of 0-9 start at 49)
-                    string text = spreadsheetCell.Text;
-                    string enteredInt = text.Substring(2); // get a substring for the entire n digit integer entered
-                    int row = int.Parse(enteredInt) - 1;
+                    // get the list of variables in the equation
+                    List<string> variableNames = this.expressionTree.GetVariableList();
 
-                    string value = this.GetCell(row, column).Value; // get the target cell's value
-                    spreadsheetCell.Value = value; // copy it to the current cell
+                    // set the value of every variable in the equation in the tree
+                    foreach (string variableName in variableNames) {
+                        // get the cell from the name
+                        int column = variableName[0] - 65; // get the column
+                        int row = int.Parse(variableName.Substring(1)) - 1; // get the row: get a substring containing the row and parse it to an integer
+
+                        // get the value of the target cell
+                        string targetValue = this.GetCell(row, column).Value;
+
+                        // try to parse it to a double
+                        if (double.TryParse(targetValue, out double valueDouble)) {
+                            // if successful - set value of variable in tree
+                            this.expressionTree.SetVariable(variableName, valueDouble);
+                        }
+                        else {
+                            // else throw exception
+                            throw new Exception("Value of target cell is not a number");
+                        }
+                    }
+
+                    // get the evaluation
+                    double evaluation = this.expressionTree.Evaluate();
+
+                    // copy the result to the current cell
+                    spreadsheetCell.Value = evaluation.ToString();
                 }
 
                 // if it is just text

@@ -39,6 +39,11 @@ namespace SpreadsheetEngine {
         private Dictionary<string, double> variables = new Dictionary<string, double>();
 
         /// <summary>
+        /// Tracks a list of all varibales in the expression, so it can easily be relayed to the spreadsheet.
+        /// </summary>
+        private List<string> variablesList = new List<string>();
+
+        /// <summary>
         /// Initializes a new instance of the <see cref="ExpressionTree"/> class.
         /// Constructs the tree from an expression.
         /// </summary>
@@ -62,6 +67,14 @@ namespace SpreadsheetEngine {
                 // set the value
                 this.variables[variableName] = variableValue;
             }
+        }
+
+        /// <summary>
+        /// Returns a list of all variable names in the expression, so that the spreadsheet knows what variables to set.
+        /// </summary>
+        /// <returns>A list of strings.</returns>
+        public List<string> GetVariableList() {
+            return this.variablesList;
         }
 
         /// <summary>
@@ -235,6 +248,7 @@ namespace SpreadsheetEngine {
                 // if its a variable
                 else if (this.IsVariable(token)) {
                     stack.Push(new VariableNode(token, this.variables)); // create a varibale node and push it to the stack
+                    this.variablesList.Add(token); // add the variable to the list of variables in the expression
                 }
 
                 // if its a constant
