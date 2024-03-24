@@ -112,7 +112,7 @@ namespace SpreadsheetEngine {
                 // if the entered text is an equation
                 if (spreadsheetCell.Text[0] == '=') {
                     // evaluate the equation
-                    // for hw4 we just need to have equals another cell
+                    // for hw4 we just need to have equals another cell.
                     // get the column entered by the user (ascii values of A-Z start at 65)
                     int column = spreadsheetCell.Text[1] - 65;
 
