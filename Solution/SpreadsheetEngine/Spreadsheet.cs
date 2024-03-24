@@ -98,6 +98,12 @@ namespace SpreadsheetEngine {
             }
         }
 
+        public string GetCellText(int rowIndex, int columnIndex) {
+            Cell cell = this.cellArray[rowIndex, columnIndex]; // get the cell
+            string text = cell.Text; // get the text
+            return text;
+        }
+
         /// <summary>
         /// If the text of a cell changes, we need to evaluate the text and change the cell value here.
         /// </summary>
@@ -164,9 +170,9 @@ namespace SpreadsheetEngine {
 
                 set {
                     // if text being set is the same text, don't call the property change event (since the text isn't actually being changed)
-                    if (this.text == value) {
-                        return;
-                    }
+                    //if (this.text == value) {
+                    //    return;
+                    //}
 
                     // if new text is different
                     this.text = value; // set new text

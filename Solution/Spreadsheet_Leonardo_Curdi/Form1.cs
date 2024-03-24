@@ -4,6 +4,7 @@
 using System.ComponentModel;
 using System.Data.Common;
 using SpreadsheetEngine;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace Spreadsheet_Leonardo_Curdi {
     /// <summary>
@@ -85,8 +86,32 @@ namespace Spreadsheet_Leonardo_Curdi {
         /// <param name="sender">This is the object that is triggering an event.</param>
         /// <param name="e">The arguments associated with the event.</param>
         private void CellGrid_CellValueChanged(object sender, DataGridViewCellEventArgs e) {
+            //if (e.ColumnIndex >= 0 && e.RowIndex >= 0) { // for some reason you have to check if the indexes are not negative.
+            //    string enteredText = this.CellGrid.Rows[e.RowIndex].Cells[e.ColumnIndex].Value.ToString(); // get the entered text from the user.
+            //    this.spreadsheet.SetCellText(e.RowIndex, e.ColumnIndex, enteredText); // update the text of the cell. (the text will be evaluated in the engine then bubbled back up to the listener in the form to update the value in the GUI)
+            //}
+        }
+
+        /// <summary>
+        /// An event handler for when the user double clicks into a cell to change the text.
+        /// Makes the cell display the unevaluated text.
+        /// </summary>
+        /// <param name="sender">This is the object that is triggering an event.</param>
+        /// <param name="e">The arguments associated with the event.</param>
+        private void CellGrid_CellBeginEdit(object sender, DataGridViewCellCancelEventArgs e) {
+            string text = this.spreadsheet.GetCellText(e.RowIndex, e.ColumnIndex);
+            this.CellGrid.Rows[e.RowIndex].Cells[e.ColumnIndex].Value = text;
+        }
+
+        /// <summary>
+        /// An evelnt handler for when the user finishes editing the text of a cell.
+        /// Sets the text of the corresponding cell in the spreadsheet engine, which will be evaluated, then the result will bubble up to display in the UI.
+        /// </summary>
+        /// <param name="sender">This is the object that is triggering an event.</param>
+        /// <param name="e">The arguments associated with the event.</param>
+        private void CellGrid_CellEndEdit(object sender, DataGridViewCellEventArgs e) {
             if (e.ColumnIndex >= 0 && e.RowIndex >= 0) { // for some reason you have to check if the indexes are not negative.
-                string enteredText = this.CellGrid.Rows[e.RowIndex].Cells[e.ColumnIndex].Value.ToString() !; // get the entered text from the user.
+                string enteredText = this.CellGrid.Rows[e.RowIndex].Cells[e.ColumnIndex].Value.ToString(); // get the entered text from the user.
                 this.spreadsheet.SetCellText(e.RowIndex, e.ColumnIndex, enteredText); // update the text of the cell. (the text will be evaluated in the engine then bubbled back up to the listener in the form to update the value in the GUI)
             }
         }
