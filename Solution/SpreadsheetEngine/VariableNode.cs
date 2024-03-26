@@ -30,7 +30,6 @@ namespace SpreadsheetEngine {
         public VariableNode(string name, Dictionary<string, double> variables) {
             this.name = name;
             this.variables = variables;
-            this.variables.Add(this.name, 0); // add the variable with a default value of 0
         }
 
         /// <summary>
@@ -39,8 +38,14 @@ namespace SpreadsheetEngine {
         /// </summary>
         /// <returns>A double containing the result of evaluation of the node.</returns>
         public override double Evaluate() {
-            // use the dictionary to get the value associated with the variable
-            return this.variables[this.name];
+            // we're not giving variables a default value, so check if the variable has been given a value
+            if (this.variables.ContainsKey(this.name)) {
+                // use the dictionary to get the value associated with the variable
+                return this.variables[this.name];
+            }
+
+            // if not, throw an exception
+            throw new Exception($"Variable '{this.name}' has not been assigned a value.");
         }
     }
 }
