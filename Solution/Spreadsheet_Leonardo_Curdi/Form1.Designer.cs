@@ -40,7 +40,6 @@
             CellGrid.TabIndex = 0;
             CellGrid.CellBeginEdit += CellGrid_CellBeginEdit;
             CellGrid.CellEndEdit += CellGrid_CellEndEdit;
-            CellGrid.CellValueChanged += CellGrid_CellValueChanged;
             // 
             // DemoButton
             // 

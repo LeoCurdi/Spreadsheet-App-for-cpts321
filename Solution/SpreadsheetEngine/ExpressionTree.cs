@@ -244,8 +244,8 @@ namespace SpreadsheetEngine {
                         stack.Push(operatorNode);
                     }
                     catch (UnhandledOperatorException e) {
-                        // handle exception (use e.message and e.stacktrace
-                        throw new Exception("Expression contains an invalid operator");
+                        // handle exception (use e.message and e.stacktrace)
+                        throw new Exception(e.Message);
                     }
                     finally {
                         // always executes whether or not an exception is thrown

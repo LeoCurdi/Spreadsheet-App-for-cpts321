@@ -128,41 +128,40 @@ namespace SpreadsheetEngine {
 
                 // if the entered text is an equation - evaluate it
                 if (spreadsheetCell.Text[0] == '=') {
-                    // give the equation to the expression tree
-                    this.expressionTree = new ExpressionTree(spreadsheetCell.Text);
-
-                    // get the list of variables in the equation
-                    List<string> variableNames = this.expressionTree.GetVariableList();
-
-                    // set the value of every variable in the equation in the tree
-                    foreach (string variableName in variableNames) {
-                        // get the cell from the name
-                        int column = variableName[0] - 65; // get the column
-                        int row = int.Parse(variableName.Substring(1)) - 1; // get the row: get a substring containing the row and parse it to an integer
-
-                        // get the value of the target cell
-                        string targetValue = this.GetCell(row, column).Value;
-
-                        // try to parse it to a double
-                        if (double.TryParse(targetValue, out double valueDouble)) {
-                            // if successful - set value of variable in tree
-                            this.expressionTree.SetVariable(variableName, valueDouble);
-                        }
-                        else {
-                            // else throw exception
-                            throw new Exception("Value of target cell is not a number");
-                        }
-                    }
-
-                    // get the evaluation
                     try {
+                        // give the equation to the expression tree
+                        this.expressionTree = new ExpressionTree(spreadsheetCell.Text);
+
+                        // get the list of variables in the equation
+                        List<string> variableNames = this.expressionTree.GetVariableList();
+
+                        // set the value of every variable in the equation in the tree
+                        foreach (string variableName in variableNames) {
+                            // get the cell from the name
+                            int column = variableName[0] - 65; // get the column
+                            int row = int.Parse(variableName.Substring(1)) - 1; // get the row: get a substring containing the row and parse it to an integer
+
+                            // get the value of the target cell
+                            string targetValue = this.GetCell(row, column).Value;
+
+                            // try to parse it to a double
+                            if (double.TryParse(targetValue, out double valueDouble)) {
+                                // if successful - set value of variable in tree
+                                this.expressionTree.SetVariable(variableName, valueDouble);
+                            } else {
+                                // else throw exception
+                                throw new Exception("Value of target cell is not a number");
+                            }
+                        }
+
+                        // get the evaluation
                         double evaluation = this.expressionTree.Evaluate();
 
                         // copy the result to the current cell
                         spreadsheetCell.Value = evaluation.ToString();
-                    }
-                    catch (Exception ex) {
+                    } catch (Exception ex) {
                         Console.WriteLine(ex.Message);
+                        spreadsheetCell.Value = ex.Message;
                     }
                 }
 
@@ -182,42 +181,44 @@ namespace SpreadsheetEngine {
 
                             // update every cell that has an equation
                             if (dependentCell.Text[0] == '=') {
-                                // give the equation to the expression tree
-                                this.expressionTree = new ExpressionTree(dependentCell.Text);
-
-                                // get the list of variables in the equation
-                                List<string> variableNames = this.expressionTree.GetVariableList();
-
-                                // set the value of every variable in the equation in the tree
-                                foreach (string variableName in variableNames) {
-                                    // get the cell from the name
-                                    int column = variableName[0] - 65; // get the column
-                                    int row = int.Parse(variableName.Substring(1)) - 1; // get the row: get a substring containing the row and parse it to an integer
-
-                                    // get the value of the target cell
-                                    string targetValue = this.GetCell(row, column).Value;
-
-                                    // try to parse it to a double
-                                    if (double.TryParse(targetValue, out double valueDouble)) {
-                                        // if successful - set value of variable in tree
-                                        this.expressionTree.SetVariable(variableName, valueDouble);
-                                    } else {
-                                        // else throw exception
-                                        throw new Exception("Value of target cell is not a number");
-                                    }
-                                }
-
-                                // get the evaluation
                                 try {
+                                    // give the equation to the expression tree
+                                    this.expressionTree = new ExpressionTree(dependentCell.Text);
+
+                                    // get the list of variables in the equation
+                                    List<string> variableNames = this.expressionTree.GetVariableList();
+
+                                    // set the value of every variable in the equation in the tree
+                                    foreach (string variableName in variableNames) {
+                                        // get the cell from the name
+                                        int column = variableName[0] - 65; // get the column
+                                        int row = int.Parse(variableName.Substring(1)) - 1; // get the row: get a substring containing the row and parse it to an integer
+
+                                        // get the value of the target cell
+                                        string targetValue = this.GetCell(row, column).Value;
+
+                                        // try to parse it to a double
+                                        if (double.TryParse(targetValue, out double valueDouble)) {
+                                            // if successful - set value of variable in tree
+                                            this.expressionTree.SetVariable(variableName, valueDouble);
+                                        } else {
+                                            // else throw exception
+                                            throw new Exception("Value of target cell is not a number");
+                                        }
+                                    }
+
+                                    // get the evaluation
                                     double evaluation = this.expressionTree.Evaluate();
 
                                     // copy the result to the current cell
                                     dependentCell.Value = evaluation.ToString();
-                                } catch (Exception ex) {
-                                    Console.WriteLine(ex.Message);
-                                }
 
-                                this.CellPropertyChanged(dependentCell, e); // fire the PropertyChanged event for cell text changed
+                                    this.CellPropertyChanged(dependentCell, e); // fire the PropertyChanged event for cell text changed
+                                }
+                                catch (Exception ex) {
+                                    Console.WriteLine(ex.Message);
+                                    dependentCell.Value = ex.Message;
+                                }
                             }
                         }
                     }

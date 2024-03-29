@@ -1,17 +1,17 @@
 ﻿// Copyright (c) Leonardo Curdi - 11704166. All Rights Reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
-namespace ExpressionTreeDemoApp {
-    using System;
-    using System.Diagnostics.Metrics;
-    using System.Linq.Expressions;
-    using System.Runtime.CompilerServices;
-    using System.Runtime.Intrinsics.X86;
-    using System.Text.RegularExpressions;
-    using System.Xml.Linq;
-    using SpreadsheetEngine;
-    using static System.Net.Mime.MediaTypeNames;
+using System;
+using System.Diagnostics.Metrics;
+using System.Linq.Expressions;
+using System.Runtime.CompilerServices;
+using System.Runtime.Intrinsics.X86;
+using System.Text.RegularExpressions;
+using System.Xml.Linq;
+using SpreadsheetEngine;
+using static System.Net.Mime.MediaTypeNames;
 
+namespace ExpressionTreeDemoApp {
     /// <summary>
     /// The main program class.
     /// </summary>
