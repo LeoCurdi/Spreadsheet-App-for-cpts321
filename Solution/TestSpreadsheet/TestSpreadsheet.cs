@@ -88,7 +88,7 @@ namespace SpreadsheetTests {
         }
 
         /// <summary>
-        /// Tests a normal equation evaluation with multiple operators and variables.
+        /// Tests a edge case equation evaluation with multiple operators and variables.
         /// </summary>
         [Test]
         public void TestEvaluatingVariableEquation() {
@@ -104,6 +104,25 @@ namespace SpreadsheetTests {
                 this.testSheet.GetCell(0, 0).Value);
         }
 
+        /// <summary>
+        /// Tests a exception case equation evaluation with a variable that is not a number.
+        /// </summary>
+        [Test]
+        public void TestEquationWithInvalidVariable() {
+            // set a cell to a non number input
+            this.testSheet.SetCellText(1, 1, "memes");
 
+            // make sure the exception is handled
+            Assert.DoesNotThrow(() => this.testSheet.SetCellText(0, 0, "=B2"));
+        }
+
+        /// <summary>
+        /// Tests a exception case evaluation of an invalid equation.
+        /// </summary>
+        [Test]
+        public void TestInvalidEquation() {
+            // make sure the exception is handled
+            Assert.DoesNotThrow(() => this.testSheet.SetCellText(0, 0, "=4++6"));
+        }
     }
 }
