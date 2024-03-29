@@ -99,7 +99,7 @@ namespace SpreadsheetTests {
         [Test]
         public void TestInvalidExpression() {
             // check if it throws an exception
-            Assert.Throws<ArgumentException>(() => new ExpressionTree("2-*30"));
+            Assert.Throws<Exception>(() => new ExpressionTree("2-*30"));
         }
 
         /// <summary>

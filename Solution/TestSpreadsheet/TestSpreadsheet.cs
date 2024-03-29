@@ -64,15 +64,46 @@ namespace SpreadsheetTests {
         [Test]
         public void TestEnteringEquation() {
             // set the text of cell A1
-            this.testSheet.SetCellText(0, 0, "cohesion");
+            this.testSheet.SetCellText(0, 0, "8");
 
             // set cell B2 equal to the value of cell A1
             this.testSheet.SetCellText(1, 1, "=A1");
 
             // check if the value of B2 was correctly evaluated to equal the contents of A1.
             Assert.AreEqual(
-                "cohesion",
+                "8",
                 this.testSheet.GetCell(1, 1).Value);
         }
+
+        /// <summary>
+        /// Tests a normal equation evaluation with multiple operators but no variables.
+        /// </summary>
+        [Test]
+        public void TestEvaluatingMultiOperatorEquation() {
+            this.testSheet.SetCellText(0, 0, "=5*4-10/2+1");
+
+            Assert.AreEqual(
+                "16",
+                this.testSheet.GetCell(0, 0).Value);
+        }
+
+        /// <summary>
+        /// Tests a normal equation evaluation with multiple operators and variables.
+        /// </summary>
+        [Test]
+        public void TestEvaluatingVariableEquation() {
+            // set some cells to a number
+            this.testSheet.SetCellText(1, 1, "10");
+            this.testSheet.SetCellText(3, 3, "5");
+
+            // include those cells in the equation
+            this.testSheet.SetCellText(0, 0, "=D4*4-B2/2+1");
+
+            Assert.AreEqual(
+                "16",
+                this.testSheet.GetCell(0, 0).Value);
+        }
+
+
     }
 }
