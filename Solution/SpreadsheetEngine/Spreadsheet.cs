@@ -19,6 +19,9 @@ namespace SpreadsheetEngine {
         /// </summary>
         private Cell[,] cellArray;
 
+        /// <summary>
+        /// An instance of the expressionTree class for evaluating cell formulas.
+        /// </summary>
         private ExpressionTree expressionTree;
 
         /// <summary>
@@ -100,6 +103,12 @@ namespace SpreadsheetEngine {
             }
         }
 
+        /// <summary>
+        /// Gets the text content of a cell.
+        /// </summary>
+        /// <param name="rowIndex">The row of the cell.</param>
+        /// <param name="columnIndex">The column of the cell.</param>
+        /// <returns>A string.</returns>
         public string GetCellText(int rowIndex, int columnIndex) {
             Cell cell = this.cellArray[rowIndex, columnIndex]; // get the cell
             string text = cell.Text; // get the text
@@ -146,10 +155,15 @@ namespace SpreadsheetEngine {
                     }
 
                     // get the evaluation
-                    double evaluation = this.expressionTree.Evaluate();
+                    try {
+                        double evaluation = this.expressionTree.Evaluate();
 
-                    // copy the result to the current cell
-                    spreadsheetCell.Value = evaluation.ToString();
+                        // copy the result to the current cell
+                        spreadsheetCell.Value = evaluation.ToString();
+                    }
+                    catch (Exception ex) {
+                        Console.WriteLine(ex.Message);
+                    }
                 }
 
                 // if it is just text
@@ -158,6 +172,56 @@ namespace SpreadsheetEngine {
                 }
 
                 this.CellPropertyChanged(sender, e); // fire the PropertyChanged event for cell text changed
+
+                // temporary brute force method for updating dependent cells
+                for (int i = 0; i < this.RowCount; i++) {
+                    for (int j = 0; j < this.ColumnCount; j++) {
+                        cell = this.GetCell(i, j);
+                        if (cell is SpreadsheetCell) { // ensure it is of type SpreadsheetCell
+                            SpreadsheetCell dependentCell = (SpreadsheetCell)cell; // cast it
+
+                            // update every cell that has an equation
+                            if (dependentCell.Text[0] == '=') {
+                                // give the equation to the expression tree
+                                this.expressionTree = new ExpressionTree(dependentCell.Text);
+
+                                // get the list of variables in the equation
+                                List<string> variableNames = this.expressionTree.GetVariableList();
+
+                                // set the value of every variable in the equation in the tree
+                                foreach (string variableName in variableNames) {
+                                    // get the cell from the name
+                                    int column = variableName[0] - 65; // get the column
+                                    int row = int.Parse(variableName.Substring(1)) - 1; // get the row: get a substring containing the row and parse it to an integer
+
+                                    // get the value of the target cell
+                                    string targetValue = this.GetCell(row, column).Value;
+
+                                    // try to parse it to a double
+                                    if (double.TryParse(targetValue, out double valueDouble)) {
+                                        // if successful - set value of variable in tree
+                                        this.expressionTree.SetVariable(variableName, valueDouble);
+                                    } else {
+                                        // else throw exception
+                                        throw new Exception("Value of target cell is not a number");
+                                    }
+                                }
+
+                                // get the evaluation
+                                try {
+                                    double evaluation = this.expressionTree.Evaluate();
+
+                                    // copy the result to the current cell
+                                    dependentCell.Value = evaluation.ToString();
+                                } catch (Exception ex) {
+                                    Console.WriteLine(ex.Message);
+                                }
+
+                                this.CellPropertyChanged(dependentCell, e); // fire the PropertyChanged event for cell text changed
+                            }
+                        }
+                    }
+                }
             }
         }
 
@@ -190,11 +254,6 @@ namespace SpreadsheetEngine {
                 }
 
                 set {
-                    // if text being set is the same text, don't call the property change event (since the text isn't actually being changed)
-                    //if (this.text == value) {
-                    //    return;
-                    //}
-
                     // if new text is different
                     this.text = value; // set new text
                     this.PropertyChanged(this, new PropertyChangedEventArgs("Text")); // fire the PropertyChanged event for cell text changed
@@ -213,7 +272,7 @@ namespace SpreadsheetEngine {
 
                 set {
                     this.value = value;
-                } // setter is internal so only spreadsheet and cell can access it
+                }
             }
         }
     }

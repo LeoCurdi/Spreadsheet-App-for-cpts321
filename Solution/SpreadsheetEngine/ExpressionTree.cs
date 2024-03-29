@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Reflection;
 using System.Runtime.Serialization.Formatters;
 using System.Security.Cryptography;
@@ -62,11 +63,7 @@ namespace SpreadsheetEngine {
         /// <param name="variableName">The name of the target variable.</param>
         /// <param name="variableValue">The value to set the variable to.</param>
         public void SetVariable(string variableName, double variableValue) {
-            // if the variable exists in our dictionary
-            if (this.variables.ContainsKey(variableName)) {
-                // set the value
-                this.variables[variableName] = variableValue;
-            }
+            this.variables[variableName] = variableValue;
         }
 
         /// <summary>
@@ -234,15 +231,26 @@ namespace SpreadsheetEngine {
                 if (this.operatorNodeFactory.IsOperator(token[0])) {
                     // take the top two tokens in the stack as the right and left children of the operator
                     if (stack.Count < 2) { // error case
-                        throw new ArgumentException("Expression is invalid.");
+                        throw new Exception("Expression is invalid.");
                     }
 
                     ExpressionTreeNode right = stack.Pop();
                     ExpressionTreeNode left = stack.Pop();
 
                     // create the correct operator node and push it to the stack
-                    ExpressionTreeNode operatorNode = this.operatorNodeFactory.CreateOperatorNode(token[0], left, right);
-                    stack.Push(operatorNode);
+                    try {
+                        // code that may throw an exception
+                        ExpressionTreeNode operatorNode = this.operatorNodeFactory.CreateOperatorNode(token[0], left, right);
+                        stack.Push(operatorNode);
+                    }
+                    catch (UnhandledOperatorException e) {
+                        // handle exception (use e.message and e.stacktrace
+                        throw new Exception("Expression contains an invalid operator");
+                    }
+                    finally {
+                        // always executes whether or not an exception is thrown
+                        // used for clean up code
+                    }
                 }
 
                 // if its a variable

@@ -56,7 +56,7 @@ namespace SpreadsheetEngine {
             }
 
             // else throw an exception
-            throw new Exception("Invalid operator");
+            throw new UnhandledOperatorException("Invalid operator");
         }
 
         /// <summary>
