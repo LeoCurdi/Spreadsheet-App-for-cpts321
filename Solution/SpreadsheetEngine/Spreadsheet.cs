@@ -131,16 +131,18 @@ namespace SpreadsheetEngine {
         }
 
         /// <summary>
-        /// Sets the BGColor of a cell.
+        /// Sets the BGColor of multiple cells.
         /// </summary>
-        /// <param name="rowIndex">The row of the cell.</param>
-        /// <param name="columnIndex">The column of the cell.</param>
+        /// <param name="cellList">A list of tuples containing the row and column of every cell whos color needs to be changed.</param>
         /// <param name="newColor">The new color.</param>
-        public void SetCellColor(int rowIndex, int columnIndex, uint newColor) {
-            Cell cell = this.cellArray[rowIndex, columnIndex]; // get the cell
-            if (cell is SpreadsheetCell) { // ensure it is of type SpreadsheetCell
-                SpreadsheetCell spreadsheetCell = (SpreadsheetCell)cell; // cast it to a spreadsheet cell (since cell doesn't have setters)
-                spreadsheetCell.BGColor = newColor; // now we can set the color
+        public void SetCellColor(List<Tuple<int, int>> cellList, uint newColor) {
+            // change the color for each cell
+            foreach (var cellCoords in cellList) {
+                Cell cell = this.cellArray[cellCoords.Item1, cellCoords.Item2]; // get the cell
+                if (cell is SpreadsheetCell) { // ensure it is of type SpreadsheetCell
+                    SpreadsheetCell spreadsheetCell = (SpreadsheetCell)cell; // cast it to a spreadsheet cell (since cell doesn't have setters)
+                    spreadsheetCell.BGColor = newColor; // now we can set the color
+                }
             }
         }
 
