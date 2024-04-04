@@ -67,17 +67,28 @@ namespace Spreadsheet_Leonardo_Curdi {
         }
 
         /// <summary>
-        /// Event handler for when a cell's value has changed.
-        /// Updates the text of the cell in the DataGridView.
+        /// Event handler for when a cell's property has changed.
+        /// Updates the text of the cell in the DataGridView or the cell's BGcolor.
         /// </summary>
         /// <param name="sender">This is the object that is triggering an event.</param>
         /// <param name="e">The arguments associated with the event.</param>
         private void Cell_PropertyChanged(object sender, PropertyChangedEventArgs e) {
-            // get the cell whos value has changed
+            // get the cell whos property has changed
             Cell cell = (Cell)sender;
 
-            // update the value of the corresponding cell in the DataGridView
-            this.CellGrid.Rows[cell.RowIndex].Cells[cell.ColumnIndex].Value = cell.Value;
+            // determine which property has changed
+            if (e.PropertyName == "Text") {
+                // update the value of the corresponding cell in the DataGridView
+                this.CellGrid.Rows[cell.RowIndex].Cells[cell.ColumnIndex].Value = cell.Value;
+            }
+
+            if (e.PropertyName == "BGColor") {
+                // convert the color from uint to system.drawing.color
+                Color color = Color.FromArgb((int)cell.BGColor);
+
+                // update the bg color of the cell in the DataGridView
+                this.CellGrid.Rows[cell.RowIndex].Cells[cell.ColumnIndex].Style.BackColor = color;
+            }
         }
 
         /// <summary>

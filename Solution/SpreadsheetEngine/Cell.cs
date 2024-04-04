@@ -20,14 +20,17 @@ namespace SpreadsheetEngine {
         /// </summary>
 #pragma warning disable SA1401 // Fields should be private
         protected string text = "\0";
-#pragma warning restore SA1401 // Fields should be private
 
         /// <summary>
         /// The evaluated text, which is actually displayed in the cell.
         /// Protected so that SpreadsheetCell can inherit it.
         /// </summary>
-#pragma warning disable SA1401 // Fields should be private
         protected string value = "\0";
+
+        /// <summary>
+        /// The background color of the cell.
+        /// </summary>
+        protected uint bGColor = 0xFFFFFFFF;
 #pragma warning restore SA1401 // Fields should be private
 
         /// <summary>
@@ -71,6 +74,15 @@ namespace SpreadsheetEngine {
         public string Value {
             get {
                 return this.value;
+            }
+        }
+
+        /// <summary>
+        /// Gets the BGcolor.
+        /// </summary>
+        public uint BGColor {
+            get {
+                return this.bGColor;
             }
         }
     }

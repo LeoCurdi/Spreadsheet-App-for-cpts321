@@ -275,6 +275,20 @@ namespace SpreadsheetEngine {
                     this.value = value;
                 }
             }
+
+            /// <summary>
+            /// Gets or sets BGColor.
+            /// </summary>
+            public new uint BGColor {
+                get {
+                    return this.bGColor;
+                }
+
+                set {
+                    this.bGColor = value;
+                    this.PropertyChanged(this, new PropertyChangedEventArgs("BGColor")); // fire the PropertyChanged event for cell color changed
+                }
+            }
         }
     }
 }
