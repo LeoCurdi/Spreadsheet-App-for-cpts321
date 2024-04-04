@@ -144,6 +144,35 @@ namespace SpreadsheetTests {
         }
 
         /// <summary>
+        /// Edge case for ensuring that the program can change multiple cell colors in one shot, to different values.
+        /// </summary>
+        [Test]
+        public void TestChangingMultipleCellColor() {
+            // create a list of 2 cells
+            List<Cell> cellsList = new List<Cell>();
+            Cell cell = this.testSheet.GetCell(0, 0);
+            cellsList.Add(cell);
+            cell = this.testSheet.GetCell(1, 1);
+            cellsList.Add(cell);
+
+            // create a list of 2 colors
+            List<uint> colors = new List<uint>();
+            colors.Add(0x11111111);
+            colors.Add(0x11AAFFBB);
+
+            // set the colors
+            Spreadsheet.SetCellColor(cellsList, colors);
+
+            // check the color of both cells
+            Assert.AreEqual(
+                0x11111111,
+                this.testSheet.GetCell(0, 0).BGColor);
+            Assert.AreEqual(
+                0x11AAFFBB,
+                this.testSheet.GetCell(1, 1).BGColor);
+        }
+
+        /// <summary>
         /// Exception case - trying to undo when there are no actions in the undo stack.
         /// </summary>
         [Test]
