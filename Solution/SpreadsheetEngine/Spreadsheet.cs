@@ -24,6 +24,9 @@ namespace SpreadsheetEngine {
         /// </summary>
         private ExpressionTree expressionTree;
 
+        private Stack<Command> Undos = new Stack<Command>();
+        private Stack<Command> Redos = new Stack<Command>();
+
         /// <summary>
         /// Initializes a new instance of the <see cref="Spreadsheet"/> class.
         /// Constructor.
@@ -72,6 +75,18 @@ namespace SpreadsheetEngine {
             get {
                 return this.cellArray.GetLength(0); // get the length of the row dimension in the array
             }
+        }
+
+        public void AddUndo(Command command) {
+
+        }
+
+        public void ExecuteUndo() {
+
+        }
+
+        public void ExecuteRedo() {
+
         }
 
         /// <summary>

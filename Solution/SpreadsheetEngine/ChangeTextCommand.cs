@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace SpreadsheetEngine {
-    public class TextCommand : Command {
+    public class ChangeTextCommand : Command {
         public override void Execute() {
             throw new NotImplementedException();
         }

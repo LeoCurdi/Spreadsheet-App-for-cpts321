@@ -173,11 +173,10 @@ namespace Spreadsheet_Leonardo_Curdi {
                 uint colorValue = (uint)enteredColor.ToArgb();
 
                 // get and update the color for each of the cells that the user currently has selected
-                foreach (DataGridViewCell cell in CellGrid.SelectedCells) {
+                foreach (DataGridViewCell cell in this.CellGrid.SelectedCells) {
                     // set the color of the cell in the logic layer
                     this.spreadsheet.SetCellColor(cell.RowIndex, cell.ColumnIndex, colorValue);
                 }
-
             }
         }
     }
