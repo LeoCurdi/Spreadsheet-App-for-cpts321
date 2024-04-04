@@ -7,12 +7,14 @@ using System.Threading.Tasks;
 namespace SpreadsheetEngine {
     public class ChangeColorCommand : Command {
 
-        private uint oldColor;
+        private List<uint> oldColors;
         private uint newColor;
         private List<Cell> cellsList;
 
-        public ChangeColorCommand(List<Cell> cellsList, uint newColor) {
-            this.oldColor = cellsList[0].BGColor;
+        public override string Message { get; } = "changed cell background color";
+
+        public ChangeColorCommand(List<Cell> cellsList, List<uint> oldCellColors, uint newColor) {
+            this.oldColors = oldCellColors;
             this.newColor = newColor;
             this.cellsList = cellsList;
         }
@@ -22,7 +24,7 @@ namespace SpreadsheetEngine {
         }
 
         public override void Unexecute() {
-            Spreadsheet.SetCellColor(this.cellsList, this.oldColor);
+            Spreadsheet.SetCellColor(this.cellsList, this.oldColors);
         }
     }
 }

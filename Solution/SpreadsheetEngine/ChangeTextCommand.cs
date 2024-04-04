@@ -11,6 +11,8 @@ namespace SpreadsheetEngine {
         private string newText;
         private Cell cell;
 
+        public override string Message { get; } = "changed cell text";
+
         public ChangeTextCommand(Cell cell, string newText) {
             this.oldText = cell.Text;
             this.newText = newText;

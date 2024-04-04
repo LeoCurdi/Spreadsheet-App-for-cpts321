@@ -6,6 +6,8 @@ using System.Threading.Tasks;
 
 namespace SpreadsheetEngine {
     public abstract class Command {
+
+        public abstract string Message { get; }
         public abstract void Execute();
 
         public abstract void Unexecute();

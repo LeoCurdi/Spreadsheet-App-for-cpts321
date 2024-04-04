@@ -39,6 +39,8 @@ namespace Spreadsheet_Leonardo_Curdi {
             this.spreadsheet = new Spreadsheet(rows, columns);
             this.spreadsheet.CellPropertyChanged += this.Cell_PropertyChanged!;
             this.spreadsheet.StackPropertyChanged += this.Stack_PropertyChanged;
+            this.spreadsheet.UndoTopChanged += this.Undo_TopChanged;
+            this.spreadsheet.RedoTopChanged += this.Redo_TopChanged;
 
             // the undo and redo button should initially default to disabled
             this.undoToolStripMenuItem.Enabled = false;
@@ -95,6 +97,15 @@ namespace Spreadsheet_Leonardo_Curdi {
                 default:
                     break;
             }
+        }
+
+        private void Undo_TopChanged(object sender, PropertyChangedEventArgs e) {
+            string text = "Undo " + e.PropertyName;
+            this.undoToolStripMenuItem.Text = text;
+        }
+        private void Redo_TopChanged(object sender, PropertyChangedEventArgs e) {
+            string text = "Redo " + e.PropertyName;
+            this.redoToolStripMenuItem.Text = text;
         }
 
         /// <summary>
@@ -168,16 +179,19 @@ namespace Spreadsheet_Leonardo_Curdi {
                 Color enteredColor = colorDialog.Color;
 
                 // convert it to uint
-                uint colorValue = (uint)enteredColor.ToArgb();
+                uint newColorValue = (uint)enteredColor.ToArgb();
 
-                // get a list of the selected cells
+                // get a list of the selected cells and their old colors
                 List<Cell> changedCellsList = new List<Cell>();
+                List<uint> oldCellColors = new List<uint>();
                 foreach (DataGridViewCell cell in this.CellGrid.SelectedCells) {
-                    changedCellsList.Add(this.spreadsheet.GetCell(cell.RowIndex, cell.ColumnIndex));
+                    Cell c = this.spreadsheet.GetCell(cell.RowIndex, cell.ColumnIndex);
+                    changedCellsList.Add(c);
+                    oldCellColors.Add(c.BGColor);
                 }
 
                 // create a new command for color changed
-                ChangeColorCommand command = new ChangeColorCommand(changedCellsList, colorValue);
+                ChangeColorCommand command = new ChangeColorCommand(changedCellsList, oldCellColors, newColorValue);
 
                 // call AddUndo() with the new command to perform the task in the logic layer and add it to the list of undos
                 this.spreadsheet.AddUndo(command);
