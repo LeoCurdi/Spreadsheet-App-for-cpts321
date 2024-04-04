@@ -78,7 +78,9 @@ namespace SpreadsheetEngine {
         }
 
         public void AddUndo(Command command) {
+            // push the command to the undos stack
 
+            // execute the command
         }
 
         public void ExecuteUndo() {

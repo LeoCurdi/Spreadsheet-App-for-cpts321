@@ -110,8 +110,16 @@ namespace Spreadsheet_Leonardo_Curdi {
         /// <param name="e">The arguments associated with the event.</param>
         private void CellGrid_CellEndEdit(object sender, DataGridViewCellEventArgs e) {
             if (e.ColumnIndex >= 0 && e.RowIndex >= 0) { // for some reason you have to check if the indexes are not negative.
-                string enteredText = this.CellGrid.Rows[e.RowIndex].Cells[e.ColumnIndex].Value.ToString(); // get the entered text from the user.
-                this.spreadsheet.SetCellText(e.RowIndex, e.ColumnIndex, enteredText); // update the text of the cell. (the text will be evaluated in the engine then bubbled back up to the listener in the form to update the value in the GUI)
+                // get the entered text from the user.
+                string enteredText = this.CellGrid.Rows[e.RowIndex].Cells[e.ColumnIndex].Value.ToString();
+
+                // create a command for text changed
+                Cell cell = this.spreadsheet.GetCell(e.RowIndex, e.ColumnIndex);
+                ChangeTextCommand command = new ChangeTextCommand(cell, enteredText);
+
+                // call addUndo to change the text of the cell in the logic layer and add the undo
+                this.spreadsheet.AddUndo(command);
+                //this.spreadsheet.SetCellText(e.RowIndex, e.ColumnIndex, enteredText); // update the text of the cell. (the text will be evaluated in the engine then bubbled back up to the listener in the form to update the value in the GUI)
             }
         }
 
@@ -172,16 +180,17 @@ namespace Spreadsheet_Leonardo_Curdi {
                 // convert it to uint
                 uint colorValue = (uint)enteredColor.ToArgb();
 
-                // get and update the color for each of the cells that the user currently has selected
-                // since multiple cells can be changed in one action, we want to call the color change once, with a list of cells
-                List<Tuple<int, int>> changedCellsList = new List<Tuple<int, int>>();
+                // get a list of the selected cells
+                List<Cell> changedCellsList = new List<Cell>();
                 foreach (DataGridViewCell cell in this.CellGrid.SelectedCells) {
-                    Tuple<int, int> coords = new Tuple<int, int>(cell.RowIndex, cell.ColumnIndex);
-                    changedCellsList.Add(coords);
+                    changedCellsList.Add(this.spreadsheet.GetCell(cell.RowIndex, cell.ColumnIndex));
                 }
 
-                // set the color of all the cells in the logic layer
-                this.spreadsheet.SetCellColor(changedCellsList, colorValue);
+                // create a new command for color changed
+                ChangeColorCommand command = new ChangeColorCommand(changedCellsList, colorValue);
+
+                // call AddUndo() with the new command to perform the task in the logic layer and add it to the list of undos
+                this.spreadsheet.AddUndo(command);
             }
         }
     }
