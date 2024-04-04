@@ -38,6 +38,11 @@ namespace Spreadsheet_Leonardo_Curdi {
             // initialize the spreadsheet and sub to the cell property changed event.
             this.spreadsheet = new Spreadsheet(rows, columns);
             this.spreadsheet.CellPropertyChanged += this.Cell_PropertyChanged!;
+            this.spreadsheet.StackPropertyChanged += this.Stack_PropertyChanged;
+
+            // the undo and redo button should initially default to disabled
+            this.undoToolStripMenuItem.Enabled = false;
+            this.redoToolStripMenuItem.Enabled = false;
         }
 
         /// <summary>
@@ -63,6 +68,32 @@ namespace Spreadsheet_Leonardo_Curdi {
             // name the m rows programatically
             for (int row = 1; row <= Form1.rows; row++) {
                 this.CellGrid.Rows[row - 1].HeaderCell.Value = row.ToString(); // set the value of the header cell
+            }
+        }
+
+        /// <summary>
+        /// Event handler for when a stack's emptiness has changed.
+        /// Determines to enable or disable undo or redo button.
+        /// </summary>
+        /// <param name="sender">This is the object that is triggering an event.</param>
+        /// <param name="e">The arguments associated with the event.</param>
+        private void Stack_PropertyChanged(object sender, PropertyChangedEventArgs e) {
+            string message = e.PropertyName;
+            switch (message) {
+                case "Undos not empty":
+                    this.undoToolStripMenuItem.Enabled = true;
+                    break;
+                case "Undos empty":
+                    this.undoToolStripMenuItem.Enabled = false;
+                    break;
+                case "Redos not empty":
+                    this.redoToolStripMenuItem.Enabled = true;
+                    break;
+                case "Redos empty":
+                    this.redoToolStripMenuItem.Enabled = false;
+                    break;
+                default:
+                    break;
             }
         }
 
@@ -151,6 +182,26 @@ namespace Spreadsheet_Leonardo_Curdi {
                 // call AddUndo() with the new command to perform the task in the logic layer and add it to the list of undos
                 this.spreadsheet.AddUndo(command);
             }
+        }
+
+        /// <summary>
+        /// Called when the user clicks the undo button.
+        /// Undoes the latest action.
+        /// </summary>
+        /// <param name="sender">This is the object that is triggering an event.</param>
+        /// <param name="e">The arguments associated with the event.</param>
+        private void UndoToolStripMenuItem_Click(object sender, EventArgs e) {
+            this.spreadsheet.ExecuteUndo();
+        }
+
+        /// <summary>
+        /// Called when the user clicks the redo button.
+        /// redoes the latest undone action.
+        /// </summary>
+        /// <param name="sender">This is the object that is triggering an event.</param>
+        /// <param name="e">The arguments associated with the event.</param>
+        private void RedoToolStripMenuItem_Click(object sender, EventArgs e) {
+            this.spreadsheet.ExecuteRedo();
         }
     }
 }

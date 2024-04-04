@@ -59,6 +59,8 @@ namespace SpreadsheetEngine {
         /// </summary>
         public event PropertyChangedEventHandler CellPropertyChanged = (sender, e) => { };
 
+        public event PropertyChangedEventHandler StackPropertyChanged = (sender, e) => { };
+
         /// <summary>
         /// Gets a property that returns the number of columns in the spreadhseet.
         /// </summary>
@@ -116,6 +118,9 @@ namespace SpreadsheetEngine {
 
             // push the command to the undos stack
             this.Undos.Push(command);
+
+            // fire the PropertyChanged event to notify the UI layer that the undos is not empty
+            this.StackPropertyChanged(this, new PropertyChangedEventArgs("Undos not empty"));
         }
 
         /// <summary>
@@ -128,6 +133,14 @@ namespace SpreadsheetEngine {
 
             // push the undo onto the redo stack
             this.Redos.Push(command);
+
+            // if undos is empty - fire the PropertyChanged event to notify the UI layer that the undos is empty
+            if (this.Undos.Count == 0) {
+                this.StackPropertyChanged(this, new PropertyChangedEventArgs("Undos empty"));
+            }
+
+            // fire the PropertyChanged event to notify the UI layer that the redos is not empty
+            this.StackPropertyChanged(this, new PropertyChangedEventArgs("Redos not empty"));
         }
 
         /// <summary>
@@ -136,10 +149,18 @@ namespace SpreadsheetEngine {
         public void ExecuteRedo() {
             // redo the action and pop it from the redos stack
             Command command = this.Redos.Pop();
-            command.Unexecute();
+            command.Execute();
 
             // push the command to the undos stack
             this.Undos.Push(command);
+
+            // if redos is empty - fire the PropertyChanged event to notify the UI layer that the redos is empty
+            if (this.Redos.Count == 0) {
+                this.StackPropertyChanged(this, new PropertyChangedEventArgs("Redos empty"));
+            }
+
+            // fire the PropertyChanged event to notify the UI layer that the undos is not empty
+            this.StackPropertyChanged(this, new PropertyChangedEventArgs("Undos not empty"));
         }
 
         /// <summary>
