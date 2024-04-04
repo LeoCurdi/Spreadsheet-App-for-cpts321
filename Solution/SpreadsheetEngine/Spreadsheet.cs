@@ -122,7 +122,11 @@ namespace SpreadsheetEngine {
         /// <param name="columnIndex">The column of the cell.</param>
         /// <param name="newColor">The new color.</param>
         public void SetCellColor(int rowIndex, int columnIndex, uint newColor) {
-
+            Cell cell = this.cellArray[rowIndex, columnIndex]; // get the cell
+            if (cell is SpreadsheetCell) { // ensure it is of type SpreadsheetCell
+                SpreadsheetCell spreadsheetCell = (SpreadsheetCell)cell; // cast it to a spreadsheet cell (since cell doesn't have setters)
+                spreadsheetCell.BGColor = newColor; // now we can set the color
+            }
         }
 
         /// <summary>
