@@ -106,6 +106,10 @@ namespace SpreadsheetEngine {
             }
         }
 
+        /// <summary>
+        /// Executes an action, and adds it to the undos stack.
+        /// </summary>
+        /// <param name="command">A Command representing the action to be executed.</param>
         public void AddUndo(Command command) {
             // execute the command
             command.Execute();
@@ -114,12 +118,28 @@ namespace SpreadsheetEngine {
             this.Undos.Push(command);
         }
 
+        /// <summary>
+        /// Undoes the most recent action and saves it to the redos stack.
+        /// </summary>
         public void ExecuteUndo() {
+            // undo the action and pop it from the undos stack
+            Command command = this.Undos.Pop();
+            command.Unexecute();
 
+            // push the undo onto the redo stack
+            this.Redos.Push(command);
         }
 
+        /// <summary>
+        /// Redoes the most recently undone action and saves it to the undos stack.
+        /// </summary>
         public void ExecuteRedo() {
+            // redo the action and pop it from the redos stack
+            Command command = this.Redos.Pop();
+            command.Unexecute();
 
+            // push the command to the undos stack
+            this.Undos.Push(command);
         }
 
         /// <summary>
