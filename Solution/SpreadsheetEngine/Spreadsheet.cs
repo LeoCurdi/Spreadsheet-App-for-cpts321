@@ -170,6 +170,11 @@ namespace SpreadsheetEngine {
         /// Undoes the most recent action and saves it to the redos stack.
         /// </summary>
         public void ExecuteUndo() {
+            // error case - empty stack
+            if (this.undos.Count == 0) {
+                throw new Exception("undo stack is empty.");
+            }
+
             // undo the action and pop it from the undos stack
             Command command = this.undos.Pop();
             command.Unexecute();

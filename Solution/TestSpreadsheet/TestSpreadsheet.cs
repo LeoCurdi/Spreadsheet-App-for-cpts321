@@ -142,5 +142,13 @@ namespace SpreadsheetTests {
                 0xAAAAAAAA,
                 this.testSheet.GetCell(0, 0).BGColor);
         }
+
+        /// <summary>
+        /// Exception case - trying to undo when there are no actions in the undo stack.
+        /// </summary>
+        [Test]
+        public void TestUndoOnEmptyStack() {
+            Assert.Throws<Exception>(() => this.testSheet.ExecuteUndo());
+        }
     }
 }
