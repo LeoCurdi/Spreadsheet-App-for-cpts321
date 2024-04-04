@@ -18,11 +18,11 @@ namespace SpreadsheetEngine {
         }
 
         public override void Execute() {
-            throw new NotImplementedException();
+            Spreadsheet.SetCellText(this.cell, this.newText);
         }
 
         public override void Unexecute() {
-            throw new NotImplementedException();
+            Spreadsheet.SetCellText(this.cell, this.oldText);
         }
     }
 }

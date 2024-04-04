@@ -18,11 +18,11 @@ namespace SpreadsheetEngine {
         }
 
         public override void Execute() {
-            throw new NotImplementedException();
+            Spreadsheet.SetCellColor(this.cellsList, this.newColor);
         }
 
         public override void Unexecute() {
-            throw new NotImplementedException();
+            Spreadsheet.SetCellColor(this.cellsList, this.oldColor);
         }
     }
 }

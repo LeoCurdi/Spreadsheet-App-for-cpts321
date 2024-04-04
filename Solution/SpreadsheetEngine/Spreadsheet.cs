@@ -77,10 +77,41 @@ namespace SpreadsheetEngine {
             }
         }
 
-        public void AddUndo(Command command) {
-            // push the command to the undos stack
+        /// <summary>
+        /// Sets the text of a cell.
+        /// Static so that Command can access it without needing an instance of Spreadsheet.
+        /// </summary>
+        /// <param name="cell">The target cell.</param>
+        /// <param name="text">The new text.</param>
+        public static void SetCellText(Cell cell, string text) {
+            if (cell is SpreadsheetCell) { // ensure it is of type SpreadsheetCell
+                SpreadsheetCell spreadsheetCell = (SpreadsheetCell)cell; // cast it to a spreadsheet cell (since cell doesn't have setters)
+                spreadsheetCell.Text = text; // now we can set the text
+            }
+        }
 
+        /// <summary>
+        /// Sets the BGColor of multiple cells.
+        /// Static so that Command can access it without needing an instance of Spreadsheet.
+        /// </summary>
+        /// <param name="cellList">A list of every cell whos color needs to be changed.</param>
+        /// <param name="newColor">The new color.</param>
+        public static void SetCellColor(List<Cell> cellList, uint newColor) {
+            // change the color for each cell
+            foreach (Cell cell in cellList) {
+                if (cell is SpreadsheetCell) { // ensure it is of type SpreadsheetCell
+                    SpreadsheetCell spreadsheetCell = (SpreadsheetCell)cell; // cast it to a spreadsheet cell (since cell doesn't have setters)
+                    spreadsheetCell.BGColor = newColor; // now we can set the color
+                }
+            }
+        }
+
+        public void AddUndo(Command command) {
             // execute the command
+            command.Execute();
+
+            // push the command to the undos stack
+            this.Undos.Push(command);
         }
 
         public void ExecuteUndo() {
@@ -107,20 +138,6 @@ namespace SpreadsheetEngine {
         }
 
         /// <summary>
-        /// Sets the text of a cell.
-        /// </summary>
-        /// <param name="rowIndex">The row of the cell.</param>
-        /// <param name="columnIndex">The column of the cell.</param>
-        /// <param name="text">The text to set the cell to.</param>
-        public void SetCellText(int rowIndex, int columnIndex, string text) {
-            Cell cell = this.cellArray[rowIndex, columnIndex]; // get the cell
-            if (cell is SpreadsheetCell) { // ensure it is of type SpreadsheetCell
-                SpreadsheetCell spreadsheetCell = (SpreadsheetCell)cell; // cast it to a spreadsheet cell (since cell doesn't have setters)
-                spreadsheetCell.Text = text; // now we can set the text
-            }
-        }
-
-        /// <summary>
         /// Gets the text content of a cell.
         /// </summary>
         /// <param name="rowIndex">The row of the cell.</param>
@@ -130,22 +147,6 @@ namespace SpreadsheetEngine {
             Cell cell = this.cellArray[rowIndex, columnIndex]; // get the cell
             string text = cell.Text; // get the text
             return text;
-        }
-
-        /// <summary>
-        /// Sets the BGColor of multiple cells.
-        /// </summary>
-        /// <param name="cellList">A list of tuples containing the row and column of every cell whos color needs to be changed.</param>
-        /// <param name="newColor">The new color.</param>
-        public void SetCellColor(List<Tuple<int, int>> cellList, uint newColor) {
-            // change the color for each cell
-            foreach (var cellCoords in cellList) {
-                Cell cell = this.cellArray[cellCoords.Item1, cellCoords.Item2]; // get the cell
-                if (cell is SpreadsheetCell) { // ensure it is of type SpreadsheetCell
-                    SpreadsheetCell spreadsheetCell = (SpreadsheetCell)cell; // cast it to a spreadsheet cell (since cell doesn't have setters)
-                    spreadsheetCell.BGColor = newColor; // now we can set the color
-                }
-            }
         }
 
         /// <summary>

@@ -119,47 +119,6 @@ namespace Spreadsheet_Leonardo_Curdi {
 
                 // call addUndo to change the text of the cell in the logic layer and add the undo
                 this.spreadsheet.AddUndo(command);
-                //this.spreadsheet.SetCellText(e.RowIndex, e.ColumnIndex, enteredText); // update the text of the cell. (the text will be evaluated in the engine then bubbled back up to the listener in the form to update the value in the GUI)
-            }
-        }
-
-        /// <summary>
-        /// Event that is called when the Demo button is clicked.
-        /// </summary>
-        /// <param name="sender">This is the object that is triggering an event.</param>
-        /// <param name="e">The arguments associated with the event.</param>
-        private void DemoButton_Click(object sender, EventArgs e) {
-            this.PerformDemo();
-        }
-
-        /// <summary>
-        /// Runs the spreadsheet demo.
-        /// </summary>
-        private void PerformDemo() {
-            // create an object of Random class
-            Random random = new Random();
-            string[] randomText = { "high cohesion", "low coupling" };
-
-            // set the text of 50 random cells to a text string.
-            for (int i = 0; i < 100; i++) {
-                // get a random int for row and column
-                int row = random.Next(0, 50); // the upper bound is exclusive, so we will get 0-49
-                int column = random.Next(0, 26);
-                int text = random.Next(0, 2);
-
-                // set the text of the randomly selected cell
-                this.spreadsheet.SetCellText(row, column, randomText[text]);
-            }
-
-            // set the text in every cell in column B to "This is cell B#"
-            for (int i = 0; i < 50; i++) {
-                this.spreadsheet.SetCellText(i, 1, "This is cell B" + (i + 1));
-            }
-
-            // set the text in every cell in column A to "=B#"
-            for (int i = 0; i < 50; i++) {
-                string text = "=B" + (i + 1);
-                this.spreadsheet.SetCellText(i, 0, text);
             }
         }
 
