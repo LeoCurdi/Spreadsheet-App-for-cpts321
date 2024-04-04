@@ -154,5 +154,31 @@ namespace Spreadsheet_Leonardo_Curdi {
                 this.spreadsheet.SetCellText(i, 0, text);
             }
         }
+
+        /// <summary>
+        /// Called when the user clicks change color button.
+        /// Prompts the user for a color.
+        /// Changes the color of the cell in the logic layer.
+        /// </summary>
+        /// <param name="sender">This is the object that is triggering an event.</param>
+        /// <param name="e">The arguments associated with the event.</param>
+        private void ChangeBackgroundColorToolStripMenuItem_Click(object sender, EventArgs e) {
+            // pull up a ColorDialog (prompt the user for a color)
+            ColorDialog colorDialog = new ColorDialog();
+            if (colorDialog.ShowDialog() == DialogResult.OK) { // error checking
+                // get the color
+                Color enteredColor = colorDialog.Color;
+
+                // convert it to uint
+                uint colorValue = (uint)enteredColor.ToArgb();
+
+                // get and update the color for each of the cells that the user currently has selected
+                foreach (DataGridViewCell cell in CellGrid.SelectedCells) {
+                    // set the color of the cell in the logic layer
+                    this.spreadsheet.SetCellColor(cell.RowIndex, cell.ColumnIndex, colorValue);
+                }
+
+            }
+        }
     }
 }

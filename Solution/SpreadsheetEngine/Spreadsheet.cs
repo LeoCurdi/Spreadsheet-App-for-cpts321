@@ -116,6 +116,16 @@ namespace SpreadsheetEngine {
         }
 
         /// <summary>
+        /// Sets the BGColor of a cell.
+        /// </summary>
+        /// <param name="rowIndex">The row of the cell.</param>
+        /// <param name="columnIndex">The column of the cell.</param>
+        /// <param name="newColor">The new color.</param>
+        public void SetCellColor(int rowIndex, int columnIndex, uint newColor) {
+
+        }
+
+        /// <summary>
         /// If the text of a cell changes, we need to evaluate the text and change the cell value here.
         /// </summary>
         /// <param name="sender">This is the object that is triggering an event.</param>
