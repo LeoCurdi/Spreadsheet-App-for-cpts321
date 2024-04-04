@@ -24,8 +24,15 @@ namespace SpreadsheetEngine {
         /// </summary>
         private ExpressionTree expressionTree;
 
-        private Stack<Command> Undos = new Stack<Command>();
-        private Stack<Command> Redos = new Stack<Command>();
+        /// <summary>
+        /// A stack containing history of actions performed by the user.
+        /// </summary>
+        private Stack<Command> undos = new Stack<Command>();
+
+        /// <summary>
+        /// A stack containing history of undone actions performed by the user.
+        /// </summary>
+        private Stack<Command> redos = new Stack<Command>();
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Spreadsheet"/> class.
@@ -55,14 +62,23 @@ namespace SpreadsheetEngine {
         }
 
         /// <summary>
-        /// Notify observers whenever a property changes.
+        /// Notify observers whenever a cell property changes.
         /// </summary>
         public event PropertyChangedEventHandler CellPropertyChanged = (sender, e) => { };
 
+        /// <summary>
+        /// Notify observers when a stack property changes.
+        /// </summary>
         public event PropertyChangedEventHandler StackPropertyChanged = (sender, e) => { };
 
+        /// <summary>
+        /// Notify observers when the top of the undo stack changes.
+        /// </summary>
         public event PropertyChangedEventHandler UndoTopChanged = (sender, e) => { };
 
+        /// <summary>
+        /// Notify observers when the top of the redo stack changes.
+        /// </summary>
         public event PropertyChangedEventHandler RedoTopChanged = (sender, e) => { };
 
         /// <summary>
@@ -118,14 +134,14 @@ namespace SpreadsheetEngine {
         /// Static so that Command can access it without needing an instance of Spreadsheet.
         /// </summary>
         /// <param name="cellList">A list of every cell whos color needs to be changed.</param>
-        /// <param name="newColor">The new color.</param>
+        /// <param name="colorList">A list contianing the new colors, mapped to the cell list.</param>
         public static void SetCellColor(List<Cell> cellList, List<uint> colorList) {
             // change the color for each cell
             int i = 0;
             foreach (Cell cell in cellList) {
                 if (cell is SpreadsheetCell) { // ensure it is of type SpreadsheetCell
                     SpreadsheetCell spreadsheetCell = (SpreadsheetCell)cell; // cast it to a spreadsheet cell (since cell doesn't have setters)
-                    spreadsheetCell.BGColor = colorList[i]; // now we can set the color
+                    spreadsheetCell.BGColor = colorList[i]; // set the corresponding color
                     i++;
                 }
             }
@@ -140,13 +156,13 @@ namespace SpreadsheetEngine {
             command.Execute();
 
             // push the command to the undos stack
-            this.Undos.Push(command);
+            this.undos.Push(command);
 
             // fire the PropertyChanged event to notify the UI layer that the undos is not empty
             this.StackPropertyChanged(this, new PropertyChangedEventArgs("Undos not empty"));
 
             // notify the UI layer of the most recently done action
-            string message = this.Undos.Peek().Message;
+            string message = this.undos.Peek().Message;
             this.UndoTopChanged(this, new PropertyChangedEventArgs(message));
         }
 
@@ -155,26 +171,26 @@ namespace SpreadsheetEngine {
         /// </summary>
         public void ExecuteUndo() {
             // undo the action and pop it from the undos stack
-            Command command = this.Undos.Pop();
+            Command command = this.undos.Pop();
             command.Unexecute();
 
             // push the undo onto the redo stack
-            this.Redos.Push(command);
+            this.redos.Push(command);
 
             // if undos is empty - notify the UI layer that the undos is empty, give UI emtpy message for undo button
-            if (this.Undos.Count == 0) {
+            if (this.undos.Count == 0) {
                 this.StackPropertyChanged(this, new PropertyChangedEventArgs("Undos empty"));
                 this.UndoTopChanged(this, new PropertyChangedEventArgs(string.Empty));
             }
 
             // if undos is not empty - notify the UI layer of the message for most recently done action
             else {
-                this.UndoTopChanged(this, new PropertyChangedEventArgs(this.Undos.Peek().Message));
+                this.UndoTopChanged(this, new PropertyChangedEventArgs(this.undos.Peek().Message));
             }
 
             // notify the UI layer that the redos is not empty, give UI the message to display
             this.StackPropertyChanged(this, new PropertyChangedEventArgs("Redos not empty"));
-            this.RedoTopChanged(this, new PropertyChangedEventArgs(this.Redos.Peek().Message));
+            this.RedoTopChanged(this, new PropertyChangedEventArgs(this.redos.Peek().Message));
         }
 
         /// <summary>
@@ -182,26 +198,26 @@ namespace SpreadsheetEngine {
         /// </summary>
         public void ExecuteRedo() {
             // redo the action and pop it from the redos stack
-            Command command = this.Redos.Pop();
+            Command command = this.redos.Pop();
             command.Execute();
 
             // push the command to the undos stack
-            this.Undos.Push(command);
+            this.undos.Push(command);
 
             // if redos is empty - notify the UI layer that the redos is empty, give UI empty message for redo button
-            if (this.Redos.Count == 0) {
+            if (this.redos.Count == 0) {
                 this.StackPropertyChanged(this, new PropertyChangedEventArgs("Redos empty"));
                 this.RedoTopChanged(this, new PropertyChangedEventArgs(string.Empty));
             }
 
             // if redos is not empty - notify the UI layer of the message for most recently undone action
             else {
-                this.RedoTopChanged(this, new PropertyChangedEventArgs(this.Redos.Peek().Message));
+                this.RedoTopChanged(this, new PropertyChangedEventArgs(this.redos.Peek().Message));
             }
 
             // notify the UI layer that the undos is not empty, give UI the message to display
             this.StackPropertyChanged(this, new PropertyChangedEventArgs("Undos not empty"));
-            this.UndoTopChanged(this, new PropertyChangedEventArgs(this.Undos.Peek().Message));
+            this.UndoTopChanged(this, new PropertyChangedEventArgs(this.undos.Peek().Message));
         }
 
         /// <summary>
@@ -229,6 +245,21 @@ namespace SpreadsheetEngine {
             Cell cell = this.cellArray[rowIndex, columnIndex]; // get the cell
             string text = cell.Text; // get the text
             return text;
+        }
+
+        /// <summary>
+        /// Sets the text of a cell.
+        /// This overloaded version is now only used by the old test cases.
+        /// </summary>
+        /// <param name="rowIndex">The row of the cell.</param>
+        /// <param name="columnIndex">The column of the cell.</param>
+        /// <param name="text">The new text.</param>
+        public void SetCellText(int rowIndex, int columnIndex, string text) {
+            Cell cell = this.cellArray[rowIndex, columnIndex]; // get the cell
+            if (cell is SpreadsheetCell) { // ensure it is of type SpreadsheetCell
+                SpreadsheetCell spreadsheetCell = (SpreadsheetCell)cell; // cast it to a spreadsheet cell (since cell doesn't have setters)
+                spreadsheetCell.Text = text; // now we can set the text
+            }
         }
 
         /// <summary>

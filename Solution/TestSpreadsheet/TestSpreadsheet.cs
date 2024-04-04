@@ -1,6 +1,7 @@
 // Copyright (c) Leonardo Curdi - 11704166. All Rights Reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 using System.Numerics;
+using System.Windows.Forms;
 using NUnit.Framework;
 using SpreadsheetEngine;
 
@@ -123,6 +124,23 @@ namespace SpreadsheetTests {
         public void TestInvalidEquation() {
             // make sure the exception is handled
             Assert.DoesNotThrow(() => this.testSheet.SetCellText(0, 0, "=4++6"));
+        }
+
+        /// <summary>
+        /// Tests a normal case for changing cell color.
+        /// </summary>
+        [Test]
+        public void TestChangingCellColor() {
+            uint newColorValue = 0xAAAAAAAA;
+            List<Cell> cellsList = new List<Cell>();
+            Cell cell = this.testSheet.GetCell(0, 0);
+            cellsList.Add(cell);
+
+            Spreadsheet.SetCellColor(cellsList, newColorValue);
+
+            Assert.AreEqual(
+                0xAAAAAAAA,
+                this.testSheet.GetCell(0, 0).BGColor);
         }
     }
 }

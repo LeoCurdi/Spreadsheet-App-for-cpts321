@@ -99,10 +99,21 @@ namespace Spreadsheet_Leonardo_Curdi {
             }
         }
 
+        /// <summary>
+        /// Event handler for when the top item on the undo stack changes.
+        /// </summary>
+        /// <param name="sender">This is the object that is triggering an event.</param>
+        /// <param name="e">The arguments associated with the event.</param>
         private void Undo_TopChanged(object sender, PropertyChangedEventArgs e) {
             string text = "Undo " + e.PropertyName;
             this.undoToolStripMenuItem.Text = text;
         }
+
+        /// <summary>
+        /// Event handler for when the top item on the redo stack changes.
+        /// </summary>
+        /// <param name="sender">This is the object that is triggering an event.</param>
+        /// <param name="e">The arguments associated with the event.</param>
         private void Redo_TopChanged(object sender, PropertyChangedEventArgs e) {
             string text = "Redo " + e.PropertyName;
             this.redoToolStripMenuItem.Text = text;
