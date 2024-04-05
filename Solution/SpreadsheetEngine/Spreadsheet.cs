@@ -151,6 +151,10 @@ namespace SpreadsheetEngine {
             }
         }
 
+        /// <summary>
+        /// Takes in a file path, generates the XML data for the current sheet, and writes it to the file path.
+        /// </summary>
+        /// <param name="filePath">The target file path.</param>
         public void SaveCurrentSheetToFile(string filePath) {
             // create an xmlWriter to write the sheet data to the file
             using (XmlWriter xmlWriter = XmlWriter.Create(filePath)) {
@@ -185,11 +189,11 @@ namespace SpreadsheetEngine {
             }
         }
 
-        public void LoadSheet(Stream fileStream) {
-            //Clear all spreadsheet data before loading file data. The load-from-file action is NOT a merge with
-            //existing content.
-            //● Clear the undo/redo stacks after loading a file.
-            //● Make sure formulas are properly evaluated after loading.
+        /// <summary>
+        /// Takes in a file path containing XML, clears the current spreadsheet and builds a new one from the XML file.
+        /// </summary>
+        /// <param name="filePath">The target file path.</param>
+        public void LoadSheetFromFile(string filePath) {
             //● You may assume only valid XML files will be loaded, but make sure loading is resilient to XML
             //that has different ordering from what your saving code produces as well as extra tags. As a
             //simple example, if you’re always writing the <bgcolor> tag first for each cell followed by the
@@ -200,6 +204,31 @@ namespace SpreadsheetEngine {
             //things manually down at the string level. We discussed several options in class, such as
             //XDocument, XmlDocument, XmlReader, an
 
+            // Clear all spreadsheet data before loading file data, including undo/redo stacks
+            this.ClearSheet();
+
+            // load the data into the spreadsheet
+
+
+            // Make sure formulas are properly evaluated after loading.
+        }
+
+        /// <summary>
+        /// Clears all cell and stack data.
+        /// </summary>
+        private void ClearSheet() {
+            // visit each cell in the sheet
+            foreach (Cell cell in this.cellArray) {
+                if (cell is SpreadsheetCell) {
+                    SpreadsheetCell spreadsheetCell = (SpreadsheetCell)cell; // cast it to a spreadsheet cell (since cell doesn't have setters)
+                    spreadsheetCell.Text = "\0"; // reset the text to null string
+                    spreadsheetCell.BGColor = 0xFFFFFFFF; // reset the color to default
+                }
+            }
+
+            // clear the stacks
+            this.undos.Clear();
+            this.redos.Clear();
         }
 
         /// <summary>

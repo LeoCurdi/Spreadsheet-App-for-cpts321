@@ -273,19 +273,11 @@ namespace Spreadsheet_Leonardo_Curdi {
 
             // If the user selected a file and clicked OK in the file dialog
             if (ofd.ShowDialog() == DialogResult.OK) {
-                // open a file stream based on the selected file
-                Stream fileStream = ofd.OpenFile();
+                // get the file path from the file dialog
+                string filePath = ofd.FileName;
 
                 // pass the stream to the spreadsheet
-                this.spreadsheet.LoadSheet(fileStream);
-
-
-
-
-
-                // create a stream reader to read from the filestream
-                using (StreamReader sr = new StreamReader(fileStream)) { // StreamReader inherits from TextReader and has a constructor that takes a file name
-                }
+                this.spreadsheet.LoadSheetFromFile(filePath);
             }
         }
     }
