@@ -147,6 +147,14 @@ namespace SpreadsheetEngine {
             }
         }
 
+        public string GetCurrentSheetXML() {
+            return "";
+        }
+
+        public void LoadSheet(StreamReader sr) {
+
+        }
+
         /// <summary>
         /// Executes an action, and adds it to the undos stack.
         /// </summary>

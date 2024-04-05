@@ -229,12 +229,62 @@ namespace Spreadsheet_Leonardo_Curdi {
             this.spreadsheet.ExecuteRedo();
         }
 
+        /// <summary>
+        /// Called when the save to file button is clicked.
+        /// Saves the current spreadsheet content to a file on the user's computer.
+        /// </summary>
+        /// <param name="sender">This is the object that is triggering an event.</param>
+        /// <param name="e">The arguments associated with the event.</param>
         private void SaveFileToolStripMenuItem_Click(object sender, EventArgs e) {
-            this.spreadsheet.SaveCurrentSheet();
+            // create an instance of the save file dialog class
+            SaveFileDialog sfd = new SaveFileDialog();
+
+            // set the directory to "c:\"
+            sfd.InitialDirectory = "c:\\";
+
+            // filter the file dialog to only allow txt files or all files
+            sfd.Filter = "txt files (*.txt)|*.txt|All files (*.*)|*.*";
+
+            // If the user selected a file and clicked OK in the file dialog
+            if (sfd.ShowDialog() == DialogResult.OK) {
+                // get the file path from the file dialog
+                string filePath = sfd.FileName;
+
+                // get the data of the current spreadsheet to save to the file
+                string data = this.spreadsheet.GetCurrentSheetXML();
+
+                // write the text to the file
+                File.WriteAllText(filePath, data);
+            }
         }
 
+        /// <summary>
+        /// Called when the load from file button is clicked.
+        /// Opens an XML file from the user's computer and passes it to the spreadsheet.
+        /// </summary>
+        /// <param name="sender">This is the object that is triggering an event.</param>
+        /// <param name="e">The arguments associated with the event.</param>
         private void OpenFileToolStripMenuItem_Click(object sender, EventArgs e) {
+            // create an instance of the open file dialog class
+            OpenFileDialog ofd = new OpenFileDialog();
 
+            // set the directory to "c:\"
+            ofd.InitialDirectory = "c:\\";
+
+            // filter the file dialog to only allow txt files or all files
+            ofd.Filter = "txt files (*.txt)|*.txt|All files (*.*)|*.*";
+
+            // If the user selected a file and clicked OK in the file dialog
+            if (ofd.ShowDialog() == DialogResult.OK) {
+                // open a file stream based on the selected file
+                Stream fileStream = ofd.OpenFile();
+
+                // create a stream reader to read from the filestream
+                using (StreamReader sr = new StreamReader(fileStream)) { // StreamReader inherits from TextReader and has a constructor that takes a file name
+                    // pass the stream reader to LoadFile()
+                    this.spreadsheet.LoadSheet(sr);
+                }
+            }
         }
     }
 }
