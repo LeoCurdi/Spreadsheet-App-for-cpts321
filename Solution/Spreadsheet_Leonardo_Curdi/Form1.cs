@@ -228,5 +228,13 @@ namespace Spreadsheet_Leonardo_Curdi {
         private void RedoToolStripMenuItem_Click(object sender, EventArgs e) {
             this.spreadsheet.ExecuteRedo();
         }
+
+        private void SaveFileToolStripMenuItem_Click(object sender, EventArgs e) {
+            this.spreadsheet.SaveCurrentSheet();
+        }
+
+        private void OpenFileToolStripMenuItem_Click(object sender, EventArgs e) {
+
+        }
     }
 }

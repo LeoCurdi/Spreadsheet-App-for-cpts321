@@ -26,6 +26,8 @@
             CellGrid = new DataGridView();
             menuStrip1 = new MenuStrip();
             fileToolStripMenuItem1 = new ToolStripMenuItem();
+            saveToolStripMenuItem = new ToolStripMenuItem();
+            openFileToolStripMenuItem = new ToolStripMenuItem();
             editToolStripMenuItem = new ToolStripMenuItem();
             undoToolStripMenuItem = new ToolStripMenuItem();
             redoToolStripMenuItem = new ToolStripMenuItem();
@@ -60,9 +62,24 @@
             // 
             // fileToolStripMenuItem1
             // 
+            fileToolStripMenuItem1.DropDownItems.AddRange(new ToolStripItem[] { openFileToolStripMenuItem, saveToolStripMenuItem });
             fileToolStripMenuItem1.Name = "fileToolStripMenuItem1";
             fileToolStripMenuItem1.Size = new Size(46, 24);
             fileToolStripMenuItem1.Text = "File";
+            // 
+            // saveToolStripMenuItem
+            // 
+            saveToolStripMenuItem.Name = "saveToolStripMenuItem";
+            saveToolStripMenuItem.Size = new Size(224, 26);
+            saveToolStripMenuItem.Text = "Save File";
+            saveToolStripMenuItem.Click += SaveFileToolStripMenuItem_Click;
+            // 
+            // openFileToolStripMenuItem
+            // 
+            openFileToolStripMenuItem.Name = "openFileToolStripMenuItem";
+            openFileToolStripMenuItem.Size = new Size(224, 26);
+            openFileToolStripMenuItem.Text = "Open File";
+            openFileToolStripMenuItem.Click += OpenFileToolStripMenuItem_Click;
             // 
             // editToolStripMenuItem
             // 
@@ -74,14 +91,14 @@
             // undoToolStripMenuItem
             // 
             undoToolStripMenuItem.Name = "undoToolStripMenuItem";
-            undoToolStripMenuItem.Size = new Size(224, 26);
+            undoToolStripMenuItem.Size = new Size(128, 26);
             undoToolStripMenuItem.Text = "Undo";
             undoToolStripMenuItem.Click += UndoToolStripMenuItem_Click;
             // 
             // redoToolStripMenuItem
             // 
             redoToolStripMenuItem.Name = "redoToolStripMenuItem";
-            redoToolStripMenuItem.Size = new Size(224, 26);
+            redoToolStripMenuItem.Size = new Size(128, 26);
             redoToolStripMenuItem.Text = "Redo";
             redoToolStripMenuItem.Click += RedoToolStripMenuItem_Click;
             // 
@@ -133,5 +150,7 @@
         private ToolStripMenuItem redoToolStripMenuItem;
         private ToolStripMenuItem cellToolStripMenuItem;
         private ToolStripMenuItem changeBackgroundColorToolStripMenuItem;
+        private ToolStripMenuItem saveToolStripMenuItem;
+        private ToolStripMenuItem openFileToolStripMenuItem;
     }
 }
