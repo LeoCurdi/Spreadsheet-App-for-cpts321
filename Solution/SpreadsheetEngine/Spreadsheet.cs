@@ -5,9 +5,13 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
+using System.Runtime.Intrinsics.X86;
 using System.Text;
+using System.Threading.Channels;
 using System.Threading.Tasks;
+using System.Xml;
 using static System.Net.Mime.MediaTypeNames;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace SpreadsheetEngine {
     /// <summary>
@@ -147,11 +151,54 @@ namespace SpreadsheetEngine {
             }
         }
 
-        public string GetCurrentSheetXML() {
-            return "";
+        public void SaveCurrentSheetToFile(string filePath) {
+            // create an xmlWriter to write the sheet data to the file
+            using (XmlWriter xmlWriter = XmlWriter.Create(filePath)) {
+                // start the document
+                xmlWriter.WriteStartDocument();
+
+                // create a spreadsheet attribute
+                xmlWriter.WriteStartElement("Spreadsheet");
+
+                // visit each cell in the sheet
+                foreach (Cell cell in this.cellArray) {
+                    // check if the cell has any non default values
+                    if (cell.Text != "\0" || cell.BGColor != 0xFFFFFFFF) {
+                        // get the name of the cell
+                        char column = (char)(cell.ColumnIndex + 65);
+                        string cellName = $"{column}{cell.RowIndex + 1}";
+
+                        // write the cell to the xmlwriter
+                        xmlWriter.WriteStartElement("Cell");
+                        xmlWriter.WriteAttributeString("name", cellName);
+                        if (cell.Text != "\0") xmlWriter.WriteElementString("Text", cell.Text);
+                        if (cell.BGColor != 0xFFFFFFFF) xmlWriter.WriteElementString("Bgcolor", cell.BGColor.ToString());
+                        xmlWriter.WriteEndElement();
+                    }
+                }
+
+                // close the spreadsheet attribute
+                xmlWriter.WriteEndElement();
+
+                // finish writing the document to the file
+                xmlWriter.WriteEndDocument();
+            }
         }
 
-        public void LoadSheet(StreamReader sr) {
+        public void LoadSheet(Stream fileStream) {
+            //Clear all spreadsheet data before loading file data. The load-from-file action is NOT a merge with
+            //existing content.
+            //● Clear the undo/redo stacks after loading a file.
+            //● Make sure formulas are properly evaluated after loading.
+            //● You may assume only valid XML files will be loaded, but make sure loading is resilient to XML
+            //that has different ordering from what your saving code produces as well as extra tags. As a
+            //simple example, if you’re always writing the <bgcolor> tag first for each cell followed by the
+            //<text> tag, then your loader must still support files that have these two in the opposite order.
+            //Also, if you didn’t write more than these two tags within the <cell> content, your loader should
+            //just ignore extra tags when loading. See the example below.
+            //● Use XML reading/writing capabilities from .NET. Do not write your own XML parsers that do
+            //things manually down at the string level. We discussed several options in class, such as
+            //XDocument, XmlDocument, XmlReader, an
 
         }
 
