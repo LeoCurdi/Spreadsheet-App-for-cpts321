@@ -87,12 +87,14 @@ namespace Spreadsheet_Leonardo_Curdi {
                     break;
                 case "Undos empty":
                     this.undoToolStripMenuItem.Enabled = false;
+                    this.undoToolStripMenuItem.Text = "Undo";
                     break;
                 case "Redos not empty":
                     this.redoToolStripMenuItem.Enabled = true;
                     break;
                 case "Redos empty":
                     this.redoToolStripMenuItem.Enabled = false;
+                    this.redoToolStripMenuItem.Text = "Redo";
                     break;
                 default:
                     break;

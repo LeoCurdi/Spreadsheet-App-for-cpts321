@@ -19,6 +19,11 @@ namespace SpreadsheetEngine {
     /// </summary>
     public class Spreadsheet {
         /// <summary>
+        /// A bool to check if a spreadsheet is currently being loaded in, so that formulas are not prematurely evaluated during loading.
+        /// </summary>
+        private bool isLoading = false;
+
+        /// <summary>
         /// A 2D array of cells.
         /// </summary>
         private Cell[,] cellArray;
@@ -194,23 +199,62 @@ namespace SpreadsheetEngine {
         /// </summary>
         /// <param name="filePath">The target file path.</param>
         public void LoadSheetFromFile(string filePath) {
-            //● You may assume only valid XML files will be loaded, but make sure loading is resilient to XML
-            //that has different ordering from what your saving code produces as well as extra tags. As a
-            //simple example, if you’re always writing the <bgcolor> tag first for each cell followed by the
-            //<text> tag, then your loader must still support files that have these two in the opposite order.
-            //Also, if you didn’t write more than these two tags within the <cell> content, your loader should
-            //just ignore extra tags when loading. See the example below.
-            //● Use XML reading/writing capabilities from .NET. Do not write your own XML parsers that do
-            //things manually down at the string level. We discussed several options in class, such as
-            //XDocument, XmlDocument, XmlReader, an
 
             // Clear all spreadsheet data before loading file data, including undo/redo stacks
             this.ClearSheet();
 
             // load the data into the spreadsheet
+            this.isLoading = true;
+            using (XmlReader xmlReader = XmlReader.Create(filePath)) {
+                // read through the whole file
+                while (xmlReader.Read()) {
+                    // if the element is a cell
+                    if (xmlReader.NodeType == XmlNodeType.Element && xmlReader.Name == "Cell") {
+                        // get the cell's name
+                        string name = xmlReader.GetAttribute("name");
+                        int column = name[0] - 65;
+                        int row = int.Parse(name.Substring(1)) - 1;
 
+                        // read through each element of the cell
+                        string text = "\0";
+                        uint bgColor = 0xFFFFFFFF;
+                        xmlReader.Read(); // putting the read in the while parameter is a bad call becuase there are 1 too many reads which causes elements to be skipped
+                        while (!xmlReader.EOF) {
+                            // if its an opening element
+                            if (xmlReader.NodeType == XmlNodeType.Element) {
+                                // operate based on the element type
+                                switch (xmlReader.Name) {
+                                    case "Text":
+                                        text = xmlReader.ReadElementContentAsString();
+                                        break;
+                                    case "Bgcolor":
+                                        string color = xmlReader.ReadElementContentAsString();
+                                        bgColor = uint.Parse(color);
+                                        break;
+                                    default:
+                                        // skip all unimportant elements
+                                        xmlReader.Skip();
+                                        break;
+                                }
+                            }
+
+                            // if its a closing cell - break the reading loop
+                            if (xmlReader.NodeType == XmlNodeType.EndElement && xmlReader.Name == "Cell") {
+                                break;
+                            }
+                        }
+
+                        // set the data for the new cell
+                        this.SetCellText(row, column, text);
+                        this.SetCellColor(row, column, bgColor);
+                    }
+                }
+            }
+
+            this.isLoading = false;
 
             // Make sure formulas are properly evaluated after loading.
+
         }
 
         /// <summary>
@@ -228,7 +272,9 @@ namespace SpreadsheetEngine {
 
             // clear the stacks
             this.undos.Clear();
+            this.StackPropertyChanged(this, new PropertyChangedEventArgs("Undos empty"));
             this.redos.Clear();
+            this.StackPropertyChanged(this, new PropertyChangedEventArgs("Redos empty"));
         }
 
         /// <summary>
@@ -352,6 +398,20 @@ namespace SpreadsheetEngine {
         }
 
         /// <summary>
+        /// Sets the color of a cell.
+        /// </summary>
+        /// <param name="rowIndex">The row of the cell.</param>
+        /// <param name="columnIndex">The column of the cell.</param>
+        /// <param name="newColor">The new color.</param>
+        public void SetCellColor(int rowIndex, int columnIndex, uint newColor) {
+            Cell cell = this.cellArray[rowIndex, columnIndex]; // get the cell
+            if (cell is SpreadsheetCell) { // ensure it is of type SpreadsheetCell
+                SpreadsheetCell spreadsheetCell = (SpreadsheetCell)cell; // cast it to a spreadsheet cell (since cell doesn't have setters)
+                spreadsheetCell.BGColor = newColor;
+            }
+        }
+
+        /// <summary>
         /// If the text of a cell changes, we need to evaluate the text and change the cell value here.
         /// </summary>
         /// <param name="sender">This is the object that is triggering an event.</param>
@@ -362,8 +422,8 @@ namespace SpreadsheetEngine {
             if (cell is SpreadsheetCell) { // ensure it is of type SpreadsheetCell
                 SpreadsheetCell spreadsheetCell = (SpreadsheetCell)cell; // cast it
 
-                // if the entered text is an equation - evaluate it
-                if (spreadsheetCell.Text[0] == '=') {
+                // if the entered text is an equation - only evaluate it if the spreadsheet is not in loading phase
+                if (spreadsheetCell.Text[0] == '=' && !this.isLoading) {
                     try {
                         // give the equation to the expression tree
                         this.expressionTree = new ExpressionTree(spreadsheetCell.Text);
