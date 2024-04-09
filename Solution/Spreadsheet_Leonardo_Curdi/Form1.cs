@@ -152,7 +152,8 @@ namespace Spreadsheet_Leonardo_Curdi {
         /// </summary>
         /// <param name="sender">This is the object that is triggering an event.</param>
         /// <param name="e">The arguments associated with the event.</param>
-        private void CellGrid_CellBeginEdit(object sender, DataGridViewCellCancelEventArgs e) {
+        private void CellGrid_CellBeginEdit(object sender, DataGridViewCellCancelEventArgs e) 
+            {
             string text = this.spreadsheet.GetCellText(e.RowIndex, e.ColumnIndex);
             this.CellGrid.Rows[e.RowIndex].Cells[e.ColumnIndex].Value = text;
         }
