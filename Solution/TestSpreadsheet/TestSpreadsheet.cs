@@ -1,6 +1,7 @@
 // Copyright (c) Leonardo Curdi - 11704166. All Rights Reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 using System.Numerics;
+using System.Reflection;
 using System.Windows.Forms;
 using NUnit.Framework;
 using SpreadsheetEngine;
@@ -180,6 +181,10 @@ namespace SpreadsheetTests {
             Assert.Throws<Exception>(() => this.testSheet.ExecuteUndo());
         }
 
+        /// <summary>
+        /// A normal test case for saving to a file.
+        /// Checks if the file is created.
+        /// </summary>
         [Test]
         public void TestCreatingAnXMLFile() {
             string filePath = "testFile.xml";
@@ -187,9 +192,26 @@ namespace SpreadsheetTests {
             Assert.IsTrue(File.Exists(filePath));
         }
 
+        /// <summary>
+        /// Tests that the spreadsheet can clear itself using ClearSheet().
+        /// </summary>
         [Test]
-        public void TestSavingToFile() {
+        public void TestPrivateMethodClearSheet() {
+            // set A1 text
+            this.testSheet.SetCellText(0, 0, "memes");
 
+            // clear the sheet using reflection
+            Type type = this.testSheet.GetType();
+            MethodInfo methodInfo = type.GetMethod("ClearSheet", BindingFlags.NonPublic | BindingFlags.Instance);
+
+            if (methodInfo == null) {
+                throw new ArgumentException("ClearSheet() not found");
+            }
+
+            methodInfo.Invoke(this.testSheet, null);
+
+            // check the text was cleared
+            Assert.That(testSheet.GetCell(0, 0).Text, Is.EqualTo("\0"));
         }
     }
 }
