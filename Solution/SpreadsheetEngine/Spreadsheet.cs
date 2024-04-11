@@ -206,56 +206,63 @@ namespace SpreadsheetEngine {
 
             // load the data into the spreadsheet
             this.isLoading = true;
-            using (XmlReader xmlReader = XmlReader.Create(filePath)) {
-                // read through the whole file
-                while (xmlReader.Read()) {
-                    // if the element is a cell
-                    if (xmlReader.NodeType == XmlNodeType.Element && xmlReader.Name == "Cell") {
-                        // get the cell's name
-                        string name = xmlReader.GetAttribute("name");
-                        int column = name[0] - 65;
-                        int row = int.Parse(name.Substring(1)) - 1;
 
-                        // read through each element of the cell
-                        string text = "\0";
-                        uint bgColor = 0xFFFFFFFF;
-                        xmlReader.Read(); // putting the read in the while parameter is a bad call becuase there are 1 too many reads which causes elements to be skipped
-                        while (!xmlReader.EOF) {
-                            // if its an opening element
-                            if (xmlReader.NodeType == XmlNodeType.Element) {
-                                // operate based on the element type
-                                switch (xmlReader.Name) {
-                                    case "Text":
-                                        text = xmlReader.ReadElementContentAsString();
-                                        break;
-                                    case "Bgcolor":
-                                        string color = xmlReader.ReadElementContentAsString();
-                                        bgColor = uint.Parse(color);
-                                        break;
-                                    default:
-                                        // skip all unimportant elements
-                                        xmlReader.Skip();
-                                        break;
+            // use a try to make sure the xml is not malformed
+            try {
+                using (XmlReader xmlReader = XmlReader.Create(filePath)) {
+                    // read through the whole file
+                    while (xmlReader.Read()) {
+                        // if the element is a cell
+                        if (xmlReader.NodeType == XmlNodeType.Element && xmlReader.Name == "Cell") {
+                            // get the cell's name
+                            string name = xmlReader.GetAttribute("name");
+                            int column = name[0] - 65;
+                            int row = int.Parse(name.Substring(1)) - 1;
+
+                            // read through each element of the cell
+                            string text = "\0";
+                            uint bgColor = 0xFFFFFFFF;
+                            xmlReader.Read(); // putting the read in the while parameter is a bad call becuase there are 1 too many reads which causes elements to be skipped
+                            while (!xmlReader.EOF) {
+                                // if its an opening element
+                                if (xmlReader.NodeType == XmlNodeType.Element) {
+                                    // operate based on the element type
+                                    switch (xmlReader.Name) {
+                                        case "Text":
+                                            text = xmlReader.ReadElementContentAsString();
+                                            break;
+                                        case "Bgcolor":
+                                            string color = xmlReader.ReadElementContentAsString();
+                                            bgColor = uint.Parse(color);
+                                            break;
+                                        default:
+                                            // skip all unimportant elements
+                                            xmlReader.Skip();
+                                            break;
+                                    }
+                                }
+
+                                // if its a closing cell - break the reading loop
+                                if (xmlReader.NodeType == XmlNodeType.EndElement && xmlReader.Name == "Cell") {
+                                    break;
                                 }
                             }
 
-                            // if its a closing cell - break the reading loop
-                            if (xmlReader.NodeType == XmlNodeType.EndElement && xmlReader.Name == "Cell") {
-                                break;
-                            }
+                            // set the data for the new cell
+                            this.SetCellText(row, column, text);
+                            this.SetCellColor(row, column, bgColor);
                         }
-
-                        // set the data for the new cell
-                        this.SetCellText(row, column, text);
-                        this.SetCellColor(row, column, bgColor);
                     }
                 }
+            }
+
+            catch (Exception e) {
+                throw new Exception("XML file is malformed", e);
             }
 
             this.isLoading = false;
 
             // Make sure formulas are properly evaluated after loading.
-
         }
 
         /// <summary>

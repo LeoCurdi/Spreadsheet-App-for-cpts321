@@ -238,7 +238,19 @@ namespace SpreadsheetTests {
             string fileContents = File.ReadAllText(filePath);
             string expectedContent = "<?xml version=\"1.0\" encoding=\"utf-8\"?><Spreadsheet />";
 
-            Assert.That(fileContents, Is.EqualTo(expectedContent), "Saved file should be empty.");
+            Assert.That(fileContents, Is.EqualTo(expectedContent));
+        }
+
+        /// <summary>
+        /// Exception case for when the program tries to load in a malformed xml file.
+        /// </summary>
+        [Test]
+        public void TestLoadingInvalidXMLFile() {
+            // create a malformed xml file
+            string filePath = "testfile.xml";
+            File.WriteAllText(filePath, "<invalid><xml>");
+
+            Assert.Throws<Exception>(() => this.testSheet.LoadSheetFromFile(filePath));
         }
     }
 }
