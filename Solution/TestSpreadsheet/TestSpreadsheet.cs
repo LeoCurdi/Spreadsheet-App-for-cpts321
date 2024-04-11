@@ -213,5 +213,32 @@ namespace SpreadsheetTests {
             // check the text was cleared
             Assert.That(testSheet.GetCell(0, 0).Text, Is.EqualTo("\0"));
         }
+
+
+        /// <summary>
+        /// Edge case test for saving an empty sheet.
+        /// </summary>
+        [Test]
+        public void TestSavingEmptySheet() {
+            // clear the sheet using reflection
+            Type type = this.testSheet.GetType();
+            MethodInfo methodInfo = type.GetMethod("ClearSheet", BindingFlags.NonPublic | BindingFlags.Instance);
+
+            if (methodInfo == null) {
+                throw new ArgumentException("ClearSheet() not found");
+            }
+
+            methodInfo.Invoke(this.testSheet, null);
+
+            // save the sheet
+            string filePath = "testFile.xml";
+            this.testSheet.SaveCurrentSheetToFile(filePath);
+
+            // assert that the saved file contains a spreadsheet attribute which is empty
+            string fileContents = File.ReadAllText(filePath);
+            string expectedContent = "<?xml version=\"1.0\" encoding=\"utf-8\"?><Spreadsheet />";
+
+            Assert.That(fileContents, Is.EqualTo(expectedContent), "Saved file should be empty.");
+        }
     }
 }
