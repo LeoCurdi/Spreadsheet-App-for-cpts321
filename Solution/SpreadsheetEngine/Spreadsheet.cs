@@ -36,7 +36,7 @@ namespace SpreadsheetEngine {
         /// <summary>
         /// A stack containing history of actions performed by the user.
         /// </summary>
-        private Stack<Command> undos = new Stack<Command>();
+        private Stack<Command> undos = new ();
 
         /// <summary>
         /// A stack containing history of undone actions performed by the user.
@@ -482,7 +482,7 @@ namespace SpreadsheetEngine {
         /// </summary>
         /// <param name="sender">This is the cell that needs to be re-evaluated.</param>
         /// <param name="e">The arguments associated with the event.</param>
-        public void Cell_DependentCellChanged(object sender, PropertyChangedEventArgs e) {
+        private void Cell_DependentCellChanged(object sender, PropertyChangedEventArgs e) {
             // sender is the cell whos dependent cell changed
             Cell cell = (Cell)sender;
             if (cell is SpreadsheetCell) { // ensure it is of type SpreadsheetCell

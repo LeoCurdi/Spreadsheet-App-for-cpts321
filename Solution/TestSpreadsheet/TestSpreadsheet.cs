@@ -179,5 +179,17 @@ namespace SpreadsheetTests {
         public void TestUndoOnEmptyStack() {
             Assert.Throws<Exception>(() => this.testSheet.ExecuteUndo());
         }
+
+        [Test]
+        public void TestCreatingAnXMLFile() {
+            string filePath = "testFile.xml";
+            this.testSheet.SaveCurrentSheetToFile(filePath);
+            Assert.IsTrue(File.Exists(filePath));
+        }
+
+        [Test]
+        public void TestSavingToFile() {
+
+        }
     }
 }
