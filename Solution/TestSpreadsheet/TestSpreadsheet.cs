@@ -211,9 +211,8 @@ namespace SpreadsheetTests {
             methodInfo.Invoke(this.testSheet, null);
 
             // check the text was cleared
-            Assert.That(testSheet.GetCell(0, 0).Text, Is.EqualTo("\0"));
+            Assert.That(this.testSheet.GetCell(0, 0).Text, Is.EqualTo("\0"));
         }
-
 
         /// <summary>
         /// Edge case test for saving an empty sheet.

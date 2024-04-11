@@ -181,8 +181,14 @@ namespace SpreadsheetEngine {
                         // write the cell to the xmlwriter
                         xmlWriter.WriteStartElement("Cell");
                         xmlWriter.WriteAttributeString("name", cellName);
-                        if (cell.Text != "\0") xmlWriter.WriteElementString("Text", cell.Text);
-                        if (cell.BGColor != 0xFFFFFFFF) xmlWriter.WriteElementString("Bgcolor", cell.BGColor.ToString());
+                        if (cell.Text != "\0") {
+                            xmlWriter.WriteElementString("Text", cell.Text);
+                        }
+
+                        if (cell.BGColor != 0xFFFFFFFF) {
+                            xmlWriter.WriteElementString("Bgcolor", cell.BGColor.ToString());
+                        }
+
                         xmlWriter.WriteEndElement();
                     }
                 }
@@ -200,7 +206,6 @@ namespace SpreadsheetEngine {
         /// </summary>
         /// <param name="filePath">The target file path.</param>
         public void LoadSheetFromFile(string filePath) {
-
             // Clear all spreadsheet data before loading file data, including undo/redo stacks
             this.ClearSheet();
 
@@ -255,7 +260,6 @@ namespace SpreadsheetEngine {
                     }
                 }
             }
-
             catch (Exception e) {
                 throw new Exception("XML file is malformed", e);
             }
@@ -263,26 +267,6 @@ namespace SpreadsheetEngine {
             this.isLoading = false;
 
             // Make sure formulas are properly evaluated after loading.
-        }
-
-        /// <summary>
-        /// Clears all cell and stack data.
-        /// </summary>
-        private void ClearSheet() {
-            // visit each cell in the sheet
-            foreach (Cell cell in this.cellArray) {
-                if (cell is SpreadsheetCell) {
-                    SpreadsheetCell spreadsheetCell = (SpreadsheetCell)cell; // cast it to a spreadsheet cell (since cell doesn't have setters)
-                    spreadsheetCell.Text = "\0"; // reset the text to null string
-                    spreadsheetCell.BGColor = 0xFFFFFFFF; // reset the color to default
-                }
-            }
-
-            // clear the stacks
-            this.undos.Clear();
-            this.StackPropertyChanged(this, new PropertyChangedEventArgs("Undos empty"));
-            this.redos.Clear();
-            this.StackPropertyChanged(this, new PropertyChangedEventArgs("Redos empty"));
         }
 
         /// <summary>
@@ -494,6 +478,7 @@ namespace SpreadsheetEngine {
             Cell cell = (Cell)sender;
             if (cell is SpreadsheetCell) { // ensure it is of type SpreadsheetCell
                 SpreadsheetCell spreadsheetCell = (SpreadsheetCell)cell; // cast it
+
                 // update the cell whos dependent cell changed
                 if (spreadsheetCell.Text[0] == '=') {
                     try {
@@ -540,6 +525,26 @@ namespace SpreadsheetEngine {
                     }
                 }
             }
+        }
+
+        /// <summary>
+        /// Clears all cell and stack data.
+        /// </summary>
+        private void ClearSheet() {
+            // visit each cell in the sheet
+            foreach (Cell cell in this.cellArray) {
+                if (cell is SpreadsheetCell) {
+                    SpreadsheetCell spreadsheetCell = (SpreadsheetCell)cell; // cast it to a spreadsheet cell (since cell doesn't have setters)
+                    spreadsheetCell.Text = "\0"; // reset the text to null string
+                    spreadsheetCell.BGColor = 0xFFFFFFFF; // reset the color to default
+                }
+            }
+
+            // clear the stacks
+            this.undos.Clear();
+            this.StackPropertyChanged(this, new PropertyChangedEventArgs("Undos empty"));
+            this.redos.Clear();
+            this.StackPropertyChanged(this, new PropertyChangedEventArgs("Redos empty"));
         }
 
         /// <summary>
