@@ -251,5 +251,19 @@ namespace SpreadsheetTests {
 
             Assert.Throws<Exception>(() => this.testSheet.LoadSheetFromFile(filePath));
         }
+
+        /// <summary>
+        /// Normal case.
+        /// Sets a cell equal to a cell that is out of range of the sheet.
+        /// </summary>
+        [Test]
+        public void TestInvalidReference() {
+            // create a cell with an invalid ref
+            this.testSheet.SetCellText(0, 0, "=A51");
+
+            Assert.That(
+                this.testSheet.GetCell(0, 0).Value,
+                Is.EqualTo("!(Bad reference)"));
+        }
     }
 }
