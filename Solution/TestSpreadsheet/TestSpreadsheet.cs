@@ -265,5 +265,19 @@ namespace SpreadsheetTests {
                 this.testSheet.GetCell(0, 0).Value,
                 Is.EqualTo("!(Bad reference)"));
         }
+
+        /// <summary>
+        /// edge case.
+        /// Sets a cell equal to a malformed variable.
+        /// </summary>
+        [Test]
+        public void TestInvalidReferenceEdgeCase() {
+            // create a cell with an invalid ref
+            this.testSheet.SetCellText(0, 0, "=invalidCell");
+
+            Assert.That(
+                this.testSheet.GetCell(0, 0).Value,
+                Is.EqualTo("!(Bad reference)"));
+        }
     }
 }
