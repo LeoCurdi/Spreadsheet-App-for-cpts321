@@ -440,6 +440,79 @@ namespace SpreadsheetEngine {
         }
 
         /// <summary>
+        /// Takes a row and column and returns the string equivalent of the cell.
+        /// </summary>
+        /// <param name="row">The row of the cell.</param>
+        /// <param name="column">The column of the cell.</param>
+        /// <returns>A string representation of the cell name.</returns>
+        private string GetCellNameFromIndices(int row, int column) {
+            char columnC = (char)(column + 65);
+            string cellName = $"{columnC}{row + 1}";
+            return cellName;
+        }
+
+        /// <summary>
+        /// Takes a cell and calls a helper recursive method, which checks if the cell contains a circular reference.
+        /// </summary>
+        /// <param name="cell">The target cell.</param>
+        /// <returns>True or false.</returns>
+        private bool HasCircularReference(SpreadsheetCell cell) {
+            // initialize a set of visited cells
+            List<string> visitedCells = new List<string>();
+
+            // call recursive DFS to see if it has a circular ref
+            return this.HasCircularReferenceRecursive(cell, visitedCells);
+        }
+
+        /// <summary>
+        /// Takes in a target cell and uses DFS with cycle detection to return whether there is a cycle.
+        /// </summary>
+        /// <param name="currentCell">The target cell.</param>
+        /// <param name="visitedCells">A list of already visited cells.</param>
+        /// <returns>True or false.</returns>
+        private bool HasCircularReferenceRecursive(SpreadsheetCell currentCell, List<string> visitedCells) {
+            // get the current cell's name
+            string cellName = this.GetCellNameFromIndices(currentCell.RowIndex, currentCell.ColumnIndex);
+
+            // check if the current cell has already been visited
+            if (visitedCells.Contains(cellName)) {
+                return true;
+            }
+
+            // mark the current cell as visited
+            visitedCells.Add(cellName);
+
+            // if the current cell is not an equation - return false
+            if (currentCell.Text[0] != '=') {
+                return false;
+            }
+
+            // get a list of all cells referenced by the current cell
+            this.expressionTree = new ExpressionTree(currentCell.Text);
+            List<string> variableNames = this.expressionTree.GetVariableList();
+
+            // call DFS on each dependent cell
+            foreach (string variableName in variableNames) {
+                // get the cell
+                (int row, int column) = this.GetRowAndColFromString(variableName);
+                Cell nextCell = this.GetCell(row, column);
+                SpreadsheetCell sNextCell = (SpreadsheetCell)nextCell;
+
+                // call DFS
+                bool hasCirc = false;
+                hasCirc = this.HasCircularReferenceRecursive(sNextCell, visitedCells);
+
+                // if a cycle was detected, return true (else keep looking)
+                if (hasCirc) {
+                    return true;
+                }
+            }
+
+            // if no cycle was detected in dependent cells, return false
+            return false;
+        }
+
+        /// <summary>
         /// Takes in a cell containing a formula.
         /// Builds an expression tree for the cell.
         /// Evaluates the formula to get the value.
@@ -447,6 +520,11 @@ namespace SpreadsheetEngine {
         /// <param name="spreadsheetCell">The cell.</param>
         /// <exception cref="Exception">The formula contains a target cell who's value is not a number.</exception>
         private void EvaluateFormula(SpreadsheetCell spreadsheetCell) {
+            // check for circular reference
+            if (this.HasCircularReference(spreadsheetCell)) {
+                throw new Exception("!(circular reference)");
+            }
+
             // give the equation to the expression tree
             this.expressionTree = new ExpressionTree(spreadsheetCell.Text);
 
@@ -476,8 +554,9 @@ namespace SpreadsheetEngine {
                     // if successful - set value of variable in tree
                     this.expressionTree.SetVariable(variableName, valueDouble);
                 } else {
-                    // else throw exception
-                    throw new Exception("!(Value of target cell is not a number)");
+                    // else give default value 0
+                    this.expressionTree.SetVariable(variableName, 0);
+                    //throw new Exception("!(Value of target cell is not a number)");
                 }
             }
 
