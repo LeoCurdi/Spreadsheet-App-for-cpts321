@@ -520,6 +520,20 @@ namespace SpreadsheetEngine {
         /// <param name="spreadsheetCell">The cell.</param>
         /// <exception cref="Exception">The formula contains a target cell who's value is not a number.</exception>
         private void EvaluateFormula(SpreadsheetCell spreadsheetCell) {
+            // give the equation to the expression tree
+            this.expressionTree = new ExpressionTree(spreadsheetCell.Text);
+
+            // get the list of variables in the equation
+            List<string> variables = this.expressionTree.GetVariableList();
+
+            // check for every variable in the formula for self reference
+            foreach (string variable in variables) {
+                (int row, int column) = this.GetRowAndColFromString(variable);
+                if (spreadsheetCell.RowIndex == row && spreadsheetCell.ColumnIndex == column) {
+                    throw new Exception("!(self reference)");
+                }
+            }
+
             // check for circular reference
             if (this.HasCircularReference(spreadsheetCell)) {
                 throw new Exception("!(circular reference)");
@@ -536,15 +550,11 @@ namespace SpreadsheetEngine {
                 // get the cell from the name
                 (int row, int column) = this.GetRowAndColFromString(variableName);
 
-                // check every variable in the formula for a self reference
-                if (spreadsheetCell.RowIndex == row && spreadsheetCell.ColumnIndex == column) {
-                    throw new Exception("!(self reference)");
-                }
-
                 // subscribe to the cell
                 Cell dependentCell = this.GetCell(row, column);
                 SpreadsheetCell sDependentCell = (SpreadsheetCell)dependentCell;
                 sDependentCell.PropertyChanged += spreadsheetCell.Cell_DependentCellChanged;
+                sDependentCell.ValuePropertyChanged += spreadsheetCell.Cell_DependentCellChanged;
 
                 // get the value of the target cell
                 string targetValue = this.GetCell(row, column).Value;
@@ -556,7 +566,6 @@ namespace SpreadsheetEngine {
                 } else {
                     // else give default value 0
                     this.expressionTree.SetVariable(variableName, 0);
-                    //throw new Exception("!(Value of target cell is not a number)");
                 }
             }
 
@@ -664,6 +673,12 @@ namespace SpreadsheetEngine {
             public event PropertyChangedEventHandler PropertyChanged = (sender, e) => { };
 
             /// <summary>
+            /// Notify observers whenever the value changes.
+            /// Used for updating dependent cells.
+            /// </summary>
+            public event PropertyChangedEventHandler ValuePropertyChanged = (sender, e) => { };
+
+            /// <summary>
             /// Notify the spreadsheet that a cell in this cell's formula has changed, and to reevalute this cell.
             /// </summary>
             public event PropertyChangedEventHandler TellSheetDependentCellChanged = (sender, e) => { };
@@ -695,6 +710,7 @@ namespace SpreadsheetEngine {
 
                 set {
                     this.value = value;
+                    this.ValuePropertyChanged(this, new PropertyChangedEventArgs("Value"));
                 }
             }
 
