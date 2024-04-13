@@ -403,6 +403,66 @@ namespace SpreadsheetEngine {
             }
         }
 
+        private void EvaluateFormula(SpreadsheetCell spreadsheetCell) {
+            // give the equation to the expression tree
+            this.expressionTree = new ExpressionTree(spreadsheetCell.Text);
+
+            // get the list of variables in the equation
+            List<string> variableNames = this.expressionTree.GetVariableList();
+
+            // set the value of every variable in the equation in the tree
+            foreach (string variableName in variableNames) {
+                // get the cell from the name
+                int row, column;
+
+                // get the column
+                char c = variableName[0];
+                if (char.IsUpper(c)) {
+                    column = c - 65;
+                } else {
+                    column = c - 97;
+                }
+
+                if (column < 0 || column >= this.ColumnCount) {
+                    throw new Exception("!(Bad reference)");
+                }
+
+                // get the row: get a substring containing the row and parse it to an integer
+                if (int.TryParse(variableName.Substring(1), out row)) {
+                    row -= 1; // adjust for 0-indexed
+                } else {
+                    throw new Exception("!(Bad reference)");
+                }
+
+                if (row < 0 || row >= this.RowCount) {
+                    throw new Exception("!(Bad reference)");
+                }
+
+                // subscribe to the cell
+                Cell dependentCell = this.GetCell(row, column);
+                SpreadsheetCell sDependentCell = (SpreadsheetCell)dependentCell;
+                sDependentCell.PropertyChanged += spreadsheetCell.Cell_DependentCellChanged;
+
+                // get the value of the target cell
+                string targetValue = this.GetCell(row, column).Value;
+
+                // try to parse it to a double
+                if (double.TryParse(targetValue, out double valueDouble)) {
+                    // if successful - set value of variable in tree
+                    this.expressionTree.SetVariable(variableName, valueDouble);
+                } else {
+                    // else throw exception
+                    throw new Exception("!(Value of target cell is not a number)");
+                }
+            }
+
+            // get the evaluation
+            double evaluation = this.expressionTree.Evaluate();
+
+            // copy the result to the current cell
+            spreadsheetCell.Value = evaluation.ToString();
+        }
+
         /// <summary>
         /// If the text of a cell changes, we need to evaluate the text and change the cell value here.
         /// </summary>
@@ -417,41 +477,7 @@ namespace SpreadsheetEngine {
                 // if the entered text is an equation - only evaluate it if the spreadsheet is not in loading phase
                 if (spreadsheetCell.Text[0] == '='/* && !this.isLoading*/) {
                     try {
-                        // give the equation to the expression tree
-                        this.expressionTree = new ExpressionTree(spreadsheetCell.Text);
-
-                        // get the list of variables in the equation
-                        List<string> variableNames = this.expressionTree.GetVariableList();
-
-                        // set the value of every variable in the equation in the tree
-                        foreach (string variableName in variableNames) {
-                            // get the cell from the name
-                            int column = variableName[0] - 65; // get the column
-                            int row = int.Parse(variableName.Substring(1)) - 1; // get the row: get a substring containing the row and parse it to an integer
-
-                            // subscribe to the cell
-                            Cell dependentCell = this.GetCell(row, column);
-                            SpreadsheetCell sDependentCell = (SpreadsheetCell)dependentCell;
-                            sDependentCell.PropertyChanged += spreadsheetCell.Cell_DependentCellChanged;
-
-                            // get the value of the target cell
-                            string targetValue = this.GetCell(row, column).Value;
-
-                            // try to parse it to a double
-                            if (double.TryParse(targetValue, out double valueDouble)) {
-                                // if successful - set value of variable in tree
-                                this.expressionTree.SetVariable(variableName, valueDouble);
-                            } else {
-                                // else throw exception
-                                throw new Exception("Value of target cell is not a number");
-                            }
-                        }
-
-                        // get the evaluation
-                        double evaluation = this.expressionTree.Evaluate();
-
-                        // copy the result to the current cell
-                        spreadsheetCell.Value = evaluation.ToString();
+                        this.EvaluateFormula(spreadsheetCell);
                     } catch (Exception ex) {
                         Console.WriteLine(ex.Message);
                         spreadsheetCell.Value = ex.Message;
@@ -482,41 +508,7 @@ namespace SpreadsheetEngine {
                 // update the cell whos dependent cell changed
                 if (spreadsheetCell.Text[0] == '=') {
                     try {
-                        // give the equation to the expression tree
-                        this.expressionTree = new ExpressionTree(spreadsheetCell.Text);
-
-                        // get the list of variables in the equation
-                        List<string> variableNames = this.expressionTree.GetVariableList();
-
-                        // set the value of every variable in the equation in the tree
-                        foreach (string variableName in variableNames) {
-                            // get the cell from the name
-                            int column = variableName[0] - 65; // get the column
-                            int row = int.Parse(variableName.Substring(1)) - 1; // get the row: get a substring containing the row and parse it to an integer
-
-                            // subscribe to the cell. NOTE: there's no code for unsubbing from old subscriptions, so as equations change the cells will be subscribed to more of each other than they should
-                            Cell dependentCell = this.GetCell(row, column);
-                            SpreadsheetCell sDependentCell = (SpreadsheetCell)dependentCell;
-                            sDependentCell.PropertyChanged += spreadsheetCell.Cell_DependentCellChanged;
-
-                            // get the value of the target cell
-                            string targetValue = this.GetCell(row, column).Value;
-
-                            // try to parse it to a double
-                            if (double.TryParse(targetValue, out double valueDouble)) {
-                                // if successful - set value of variable in tree
-                                this.expressionTree.SetVariable(variableName, valueDouble);
-                            } else {
-                                // else throw exception
-                                throw new Exception("Value of target cell is not a number");
-                            }
-                        }
-
-                        // get the evaluation
-                        double evaluation = this.expressionTree.Evaluate();
-
-                        // copy the result to the current cell
-                        spreadsheetCell.Value = evaluation.ToString();
+                        this.EvaluateFormula(spreadsheetCell);
 
                         this.CellPropertyChanged(spreadsheetCell, e); // fire the PropertyChanged event for cell text changed
                     } catch (Exception ex) {
