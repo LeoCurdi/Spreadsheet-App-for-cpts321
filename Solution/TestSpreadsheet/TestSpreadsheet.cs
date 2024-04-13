@@ -289,7 +289,21 @@ namespace SpreadsheetTests {
 
             Assert.That(
                 this.testSheet.GetCell(0, 0).Value,
-                Is.EqualTo("!(self reference"));
+                Is.EqualTo("!(self reference)"));
+        }
+
+        /// <summary>
+        /// Tests a circular reference.
+        /// </summary>
+        [Test]
+        public void TestCircularReference() {
+            this.testSheet.SetCellText(0, 0, "=A2");
+            this.testSheet.SetCellText(1, 0, "=A3");
+            this.testSheet.SetCellText(2, 0, "=A1");
+
+            Assert.That(
+                this.testSheet.GetCell(2, 0).Value,
+                Is.EqualTo("!(circular reference)"));
         }
     }
 }
