@@ -458,6 +458,11 @@ namespace SpreadsheetEngine {
                 // get the cell from the name
                 (int row, int column) = this.GetRowAndColFromString(variableName);
 
+                // check every variable in the formula for a self reference
+                if (spreadsheetCell.RowIndex == row && spreadsheetCell.ColumnIndex == column) {
+                    throw new Exception("!(self reference)");
+                }
+
                 // subscribe to the cell
                 Cell dependentCell = this.GetCell(row, column);
                 SpreadsheetCell sDependentCell = (SpreadsheetCell)dependentCell;
