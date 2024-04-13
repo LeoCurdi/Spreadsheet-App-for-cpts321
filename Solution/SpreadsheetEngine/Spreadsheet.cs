@@ -488,8 +488,8 @@ namespace SpreadsheetEngine {
             }
 
             // get a list of all cells referenced by the current cell
-            this.expressionTree = new ExpressionTree(currentCell.Text);
-            List<string> variableNames = this.expressionTree.GetVariableList();
+            ExpressionTree tempExpressionTree = new ExpressionTree(currentCell.Text);
+            List<string> variableNames = tempExpressionTree.GetVariableList();
 
             // call DFS on each dependent cell
             foreach (string variableName in variableNames) {
@@ -520,30 +520,29 @@ namespace SpreadsheetEngine {
         /// <param name="spreadsheetCell">The cell.</param>
         /// <exception cref="Exception">The formula contains a target cell who's value is not a number.</exception>
         private void EvaluateFormula(SpreadsheetCell spreadsheetCell) {
-            // give the equation to the expression tree
+            // give the equation to the expression tree and get the list of variables back
             this.expressionTree = new ExpressionTree(spreadsheetCell.Text);
+            List<string> variableNames = this.expressionTree.GetVariableList();
 
-            // get the list of variables in the equation
-            List<string> variables = this.expressionTree.GetVariableList();
-
-            // check for every variable in the formula for self reference
-            foreach (string variable in variables) {
+            // check every variable in the formula for self reference
+            foreach (string variable in variableNames) {
                 (int row, int column) = this.GetRowAndColFromString(variable);
                 if (spreadsheetCell.RowIndex == row && spreadsheetCell.ColumnIndex == column) {
                     throw new Exception("!(self reference)");
                 }
             }
 
-            // check for circular reference
+            // check cell for circular reference
             if (this.HasCircularReference(spreadsheetCell)) {
                 throw new Exception("!(circular reference)");
             }
 
-            // give the equation to the expression tree
-            this.expressionTree = new ExpressionTree(spreadsheetCell.Text);
+            // unsub current cell from all old dependencies
+            foreach (SpreadsheetCell sc in spreadsheetCell.currentDependentCells) {
+                sc.ValuePropertyChanged -= spreadsheetCell.Cell_DependentCellChanged;
+            }
 
-            // get the list of variables in the equation
-            List<string> variableNames = this.expressionTree.GetVariableList();
+            spreadsheetCell.currentDependentCells.Clear();
 
             // set the value of every variable in the equation in the tree
             foreach (string variableName in variableNames) {
@@ -553,8 +552,9 @@ namespace SpreadsheetEngine {
                 // subscribe to the cell
                 Cell dependentCell = this.GetCell(row, column);
                 SpreadsheetCell sDependentCell = (SpreadsheetCell)dependentCell;
-                sDependentCell.PropertyChanged += spreadsheetCell.Cell_DependentCellChanged;
+                //sDependentCell.PropertyChanged += spreadsheetCell.Cell_DependentCellChanged;
                 sDependentCell.ValuePropertyChanged += spreadsheetCell.Cell_DependentCellChanged;
+                spreadsheetCell.currentDependentCells.Add(sDependentCell); // keep track of each cell subbed to, so that they can be unsubbed
 
                 // get the value of the target cell
                 string targetValue = this.GetCell(row, column).Value;
@@ -666,6 +666,11 @@ namespace SpreadsheetEngine {
             public SpreadsheetCell(int row, int column)
                 : base(row, column) {
             }
+
+            /// <summary>
+            /// Keeps a list of references to all cells that this cell has subscribed to, so that it can unsubscribe from them eventually.
+            /// </summary>
+            public List<SpreadsheetCell> currentDependentCells = new List<SpreadsheetCell>();
 
             /// <summary>
             /// Notify observers whenever a property changes.
