@@ -4,6 +4,7 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Data.Common;
 using System.Linq;
 using System.Runtime.Intrinsics.X86;
 using System.Text;
@@ -403,6 +404,48 @@ namespace SpreadsheetEngine {
             }
         }
 
+        /// <summary>
+        /// Takes a variable string and parses the cell row and column from it.
+        /// </summary>
+        /// <param name="variable">The target variabel.</param>
+        /// <returns>A row and column int.</returns>
+        /// <exception cref="Exception">The variable is malformed, or contains a cell that is out of range.</exception>
+        private (int row, int column) GetRowAndColFromString(string variable) {
+            int row, column;
+
+            // get the column
+            char c = variable[0];
+            if (char.IsUpper(c)) {
+                column = c - 65;
+            } else {
+                column = c - 97;
+            }
+
+            if (column < 0 || column >= this.ColumnCount) {
+                throw new Exception("!(Bad reference)");
+            }
+
+            // get the row: get a substring containing the row and parse it to an integer
+            if (int.TryParse(variable.Substring(1), out row)) {
+                row -= 1; // adjust for 0-indexed
+            } else {
+                throw new Exception("!(Bad reference)");
+            }
+
+            if (row < 0 || row >= this.RowCount) {
+                throw new Exception("!(Bad reference)");
+            }
+
+            return (row, column);
+        }
+
+        /// <summary>
+        /// Takes in a cell containing a formula.
+        /// Builds an expression tree for the cell.
+        /// Evaluates the formula to get the value.
+        /// </summary>
+        /// <param name="spreadsheetCell">The cell.</param>
+        /// <exception cref="Exception">The formula contains a target cell who's value is not a number.</exception>
         private void EvaluateFormula(SpreadsheetCell spreadsheetCell) {
             // give the equation to the expression tree
             this.expressionTree = new ExpressionTree(spreadsheetCell.Text);
@@ -413,30 +456,7 @@ namespace SpreadsheetEngine {
             // set the value of every variable in the equation in the tree
             foreach (string variableName in variableNames) {
                 // get the cell from the name
-                int row, column;
-
-                // get the column
-                char c = variableName[0];
-                if (char.IsUpper(c)) {
-                    column = c - 65;
-                } else {
-                    column = c - 97;
-                }
-
-                if (column < 0 || column >= this.ColumnCount) {
-                    throw new Exception("!(Bad reference)");
-                }
-
-                // get the row: get a substring containing the row and parse it to an integer
-                if (int.TryParse(variableName.Substring(1), out row)) {
-                    row -= 1; // adjust for 0-indexed
-                } else {
-                    throw new Exception("!(Bad reference)");
-                }
-
-                if (row < 0 || row >= this.RowCount) {
-                    throw new Exception("!(Bad reference)");
-                }
+                (int row, int column) = this.GetRowAndColFromString(variableName);
 
                 // subscribe to the cell
                 Cell dependentCell = this.GetCell(row, column);
