@@ -538,11 +538,11 @@ namespace SpreadsheetEngine {
             }
 
             // unsub current cell from all old dependencies
-            foreach (SpreadsheetCell sc in spreadsheetCell.currentDependentCells) {
+            foreach (SpreadsheetCell sc in spreadsheetCell.CurrentDependentCells) {
                 sc.ValuePropertyChanged -= spreadsheetCell.Cell_DependentCellChanged;
             }
 
-            spreadsheetCell.currentDependentCells.Clear();
+            spreadsheetCell.CurrentDependentCells.Clear();
 
             // set the value of every variable in the equation in the tree
             foreach (string variableName in variableNames) {
@@ -552,9 +552,8 @@ namespace SpreadsheetEngine {
                 // subscribe to the cell
                 Cell dependentCell = this.GetCell(row, column);
                 SpreadsheetCell sDependentCell = (SpreadsheetCell)dependentCell;
-                //sDependentCell.PropertyChanged += spreadsheetCell.Cell_DependentCellChanged;
                 sDependentCell.ValuePropertyChanged += spreadsheetCell.Cell_DependentCellChanged;
-                spreadsheetCell.currentDependentCells.Add(sDependentCell); // keep track of each cell subbed to, so that they can be unsubbed
+                spreadsheetCell.CurrentDependentCells.Add(sDependentCell); // keep track of each cell subbed to, so that they can be unsubbed
 
                 // get the value of the target cell
                 string targetValue = this.GetCell(row, column).Value;
@@ -668,11 +667,6 @@ namespace SpreadsheetEngine {
             }
 
             /// <summary>
-            /// Keeps a list of references to all cells that this cell has subscribed to, so that it can unsubscribe from them eventually.
-            /// </summary>
-            public List<SpreadsheetCell> currentDependentCells = new List<SpreadsheetCell>();
-
-            /// <summary>
             /// Notify observers whenever a property changes.
             /// </summary>
             public event PropertyChangedEventHandler PropertyChanged = (sender, e) => { };
@@ -687,6 +681,12 @@ namespace SpreadsheetEngine {
             /// Notify the spreadsheet that a cell in this cell's formula has changed, and to reevalute this cell.
             /// </summary>
             public event PropertyChangedEventHandler TellSheetDependentCellChanged = (sender, e) => { };
+
+            /// <summary>
+            /// Gets or Sets.
+            /// Keeps a list of references to all cells that this cell has subscribed to, so that it can unsubscribe from them eventually.
+            /// </summary>
+            public List<SpreadsheetCell> CurrentDependentCells { get; set; } = new List<SpreadsheetCell>();
 
             /// <summary>
             /// Gets or sets the text that is typed into the cell (unevaluated equations etc).
