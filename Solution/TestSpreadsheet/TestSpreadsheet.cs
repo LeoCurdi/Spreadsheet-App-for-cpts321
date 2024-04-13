@@ -279,5 +279,17 @@ namespace SpreadsheetTests {
                 this.testSheet.GetCell(0, 0).Value,
                 Is.EqualTo("!(Bad reference)"));
         }
+
+        /// <summary>
+        /// Tests a self reference.
+        /// </summary>
+        [Test]
+        public void TestSelfReference() {
+            this.testSheet.SetCellText(0, 0, "=A1");
+
+            Assert.That(
+                this.testSheet.GetCell(0, 0).Value,
+                Is.EqualTo("!(self reference"));
+        }
     }
 }
