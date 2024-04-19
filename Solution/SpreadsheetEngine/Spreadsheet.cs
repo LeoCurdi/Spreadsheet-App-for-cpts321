@@ -484,6 +484,7 @@ namespace SpreadsheetEngine {
 
             // if the current cell is not an equation - return false
             if (currentCell.Text[0] != '=') {
+                visitedCells.Remove(cellName);
                 return false;
             }
 
@@ -509,6 +510,7 @@ namespace SpreadsheetEngine {
             }
 
             // if no cycle was detected in dependent cells, return false
+            visitedCells.Remove(cellName);
             return false;
         }
 
@@ -532,17 +534,29 @@ namespace SpreadsheetEngine {
                 }
             }
 
-            // check cell for circular reference
-            if (this.HasCircularReference(spreadsheetCell)) {
-                throw new Exception("!(circular reference)");
-            }
-
             // unsub current cell from all old dependencies
             foreach (SpreadsheetCell sc in spreadsheetCell.CurrentDependentCells) {
                 sc.ValuePropertyChanged -= spreadsheetCell.Cell_DependentCellChanged;
             }
 
             spreadsheetCell.CurrentDependentCells.Clear();
+
+            // check cell for circular reference
+            if (this.HasCircularReference(spreadsheetCell)) {
+                // we still have to sub to dependencies
+                foreach (string variableName in variableNames) {
+                    // get the cell from the name
+                    (int row, int column) = this.GetRowAndColFromString(variableName);
+
+                    // subscribe to the cell
+                    Cell dependentCell = this.GetCell(row, column);
+                    SpreadsheetCell sDependentCell = (SpreadsheetCell)dependentCell;
+                    sDependentCell.ValuePropertyChanged += spreadsheetCell.Cell_DependentCellChanged;
+                    spreadsheetCell.CurrentDependentCells.Add(sDependentCell); // keep track of each cell subbed to, so that they can be unsubbed
+                }
+
+                throw new Exception("!(circular reference)");
+            }
 
             // set the value of every variable in the equation in the tree
             foreach (string variableName in variableNames) {
@@ -739,6 +753,10 @@ namespace SpreadsheetEngine {
             /// <param name="sender">This is the cell whos value has changed.</param>
             /// <param name="e">The arguments associated with the event.</param>
             public void Cell_DependentCellChanged(object sender, PropertyChangedEventArgs e) {
+                // if the dependent cell was changed to an error - dont notify listeners
+                SpreadsheetCell spreadsheetCell = (SpreadsheetCell)sender; // cast it
+                if (spreadsheetCell.Value[0] == '!') return;
+
                 this.TellSheetDependentCellChanged(this, new PropertyChangedEventArgs("Text"));
             }
         }
